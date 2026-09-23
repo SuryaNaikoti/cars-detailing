@@ -23,19 +23,22 @@ import { QuoteViewerPage } from './features/quotes/QuoteViewerPage';
 import { ServiceStatusTrackerPage } from './features/status/ServiceStatusTrackerPage';
 import { DashboardPage } from './features/dashboard/DashboardPage';
 import type { DashboardNavModule } from './features/dashboard/DashboardLayout';
+import { PrivateWorkshopOsPage } from './features/private/PrivateWorkshopOsPage';
 
 export function App() {
   // Read initial query params for deep link handling e.g. ?page=status&jobToken=... or /service-status/:token or ?page=dashboard
   const params = new URLSearchParams(window.location.search);
   const path = window.location.pathname;
 
-  let initialPage: 'home' | 'services' | 'book' | 'faqs' | 'contact' | 'quote' | 'status' | 'dashboard' = 'home';
+  let initialPage: 'home' | 'services' | 'book' | 'faqs' | 'contact' | 'quote' | 'status' | 'dashboard' | 'private-workshop-os' = 'home';
   let initialToken = 'track-bmw-jc2047'; // Seed default BMW job token
   let initialModule: DashboardNavModule = 'overview';
   let initialJobId: string | null = null;
 
-  // Check URL pathname routing (/service-status/:token or /quote/:token or /dashboard)
-  if (path.startsWith('/service-status/')) {
+  // Check URL pathname routing (/service-status/:token or /quote/:token or /dashboard or private sales route)
+  if (path === '/private/workshop-os' || path === '/workshop-os/private' || path.startsWith('/private/workshop-os/')) {
+    initialPage = 'private-workshop-os';
+  } else if (path.startsWith('/service-status/')) {
     initialPage = 'status';
     initialToken = path.replace('/service-status/', '').trim();
   } else if (path.startsWith('/quote/')) {
@@ -66,7 +69,7 @@ export function App() {
   }
   if (params.get('jobId')) initialJobId = params.get('jobId');
 
-  const [currentPage, setCurrentPage] = useState<'home' | 'services' | 'book' | 'faqs' | 'contact' | 'quote' | 'status' | 'dashboard'>(initialPage);
+  const [currentPage, setCurrentPage] = useState<'home' | 'services' | 'book' | 'faqs' | 'contact' | 'quote' | 'status' | 'dashboard' | 'private-workshop-os'>(initialPage);
   const [previousPage, setPreviousPage] = useState<'home' | 'dashboard'>('home');
   const [activeToken, setActiveToken] = useState<string>(initialToken);
 
@@ -74,7 +77,9 @@ export function App() {
     const handlePopState = () => {
       const p = window.location.pathname;
       const s = new URLSearchParams(window.location.search);
-      if (p.startsWith('/service-status/') || s.get('page') === 'status') {
+      if (p === '/private/workshop-os' || p === '/workshop-os/private' || p.startsWith('/private/workshop-os/') || s.get('page') === 'private-workshop-os') {
+        setCurrentPage('private-workshop-os');
+      } else if (p.startsWith('/service-status/') || s.get('page') === 'status') {
         setCurrentPage('status');
         const tok = p.startsWith('/service-status/') ? p.replace('/service-status/', '').trim() : s.get('jobToken');
         if (tok) setActiveToken(tok);
@@ -141,8 +146,8 @@ export function App() {
   return (
     <div className="min-h-screen bg-obsidian text-warm-white flex flex-col selection:bg-accent-gold/20 selection:text-accent-gold pb-16 md:pb-0">
       
-      {/* 1. Header Navigation - Clean single top header on public pages */}
-      {currentPage !== 'dashboard' && (
+      {/* 1. Header Navigation - Clean single top header on public customer pages */}
+      {currentPage !== 'dashboard' && currentPage !== 'private-workshop-os' && (
         <Header
           onOpenBooking={() => handleOpenBooking()}
           onOpenSelector={handleOpenSelector}
@@ -247,6 +252,13 @@ export function App() {
           <ServiceStatusTrackerPage token={activeToken} onBack={() => setCurrentPage('home')} />
         )}
 
+        {currentPage === 'private-workshop-os' && (
+          <PrivateWorkshopOsPage
+            onNavigateHome={() => setCurrentPage('home')}
+            onNavigateContact={() => setCurrentPage('contact')}
+          />
+        )}
+
         {currentPage === 'dashboard' && (
           <DashboardPage
             initialModule={initialModule}
@@ -266,8 +278,8 @@ export function App() {
         )}
       </main>
 
-      {/* Editorial Footer & Mobile Sticky CTA - Public pages only */}
-      {currentPage !== 'dashboard' && (
+      {/* Editorial Footer & Mobile Sticky CTA - Public customer pages only */}
+      {currentPage !== 'dashboard' && currentPage !== 'private-workshop-os' && (
         <>
           <Footer
             onNavigateSection={handleNavigateSection}
