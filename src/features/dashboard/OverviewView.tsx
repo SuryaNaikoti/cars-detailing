@@ -245,8 +245,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-warm-white">
             Workshop Overview
           </h1>
-          <p className="text-xs sm:text-sm text-muted font-light mt-1 max-w-2xl">
-            Current workshop status, active jobs, upcoming appointments, and actions requiring attention.
+          <p className="text-xs sm:text-sm text-muted font-light mt-0.5 max-w-xl">
+            Live bay occupancy, active jobs, approvals, and pending intake queues.
           </p>
         </div>
 
@@ -319,7 +319,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 <Icon className={`w-3.5 h-3.5 shrink-0 opacity-70 ${kpi.color}`} />
               </div>
               <div className="flex items-baseline justify-between mt-2">
-                <span className="text-2xl sm:text-2xl font-black font-mono tracking-tight text-warm-white">
+                <span className="text-3xl sm:text-3xl font-black font-mono tracking-tight text-warm-white">
                   {kpi.value}
                 </span>
                 {kpi.actionable && (

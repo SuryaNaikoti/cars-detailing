@@ -144,8 +144,8 @@ export const ActionHubChapter: React.FC<ActionHubChapterProps> = ({
               YOUR NEXT SERVICE STARTS HERE.
             </h2>
 
-            <p className="text-sm sm:text-base text-muted font-light max-w-2xl mx-auto leading-relaxed">
-              Tell us about your vehicle and what it needs. We&apos;ll help you choose the right service.
+            <p className="text-sm sm:text-base text-muted font-light max-w-xl mx-auto leading-relaxed">
+              Tell us what your vehicle needs. We’ll confirm bay availability and scheduling.
             </p>
           </div>
 

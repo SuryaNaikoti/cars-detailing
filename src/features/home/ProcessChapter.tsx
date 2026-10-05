@@ -10,37 +10,37 @@ export const ProcessChapter: React.FC<ProcessChapterProps> = ({ onStartServiceRe
     {
       num: '01',
       title: 'Vehicle Received',
-      desc: 'Vehicle received into reception bay. Physical intake checklist initiated and customer symptoms recorded.',
+      desc: 'Physical intake checklist logged and reported symptoms recorded.',
     },
     {
       num: '02',
       title: 'Inspection',
-      desc: 'Technician conducts multi-point mechanical inspection and control unit electronic scanning.',
+      desc: 'Multi-point mechanical inspection and digital ECU diagnostics.',
     },
     {
       num: '03',
       title: 'Estimate & Approval',
-      desc: 'Itemized quotation presented with clear scope breakdown. Customer reviews and decides authorized items.',
+      desc: 'Itemized quotation presented. You decide what proceeds.',
     },
     {
       num: '04',
       title: 'Service in Progress',
-      desc: 'Approved mechanical and electrical interventions carried out according to factory torque specs.',
+      desc: 'Mechanical execution following manufacturer torque specs.',
     },
     {
       num: '05',
       title: 'Quality Check',
-      desc: 'Post-service road evaluation, torque re-audit, and multi-point quality control sign-off.',
+      desc: 'Road evaluation, torque re-audit, and quality sign-off.',
     },
     {
       num: '06',
       title: 'Ready for Collection',
-      desc: 'Final exterior wipe-down, service documentation preparation, and customer handover notification.',
+      desc: 'Exterior wipe-down and collection readiness notification.',
     },
     {
       num: '07',
       title: 'Vehicle Delivered',
-      desc: 'Documented handover completion, digital invoice delivery, and permanent service history archival.',
+      desc: 'Documented handover and permanent service history archival.',
     },
   ];
 

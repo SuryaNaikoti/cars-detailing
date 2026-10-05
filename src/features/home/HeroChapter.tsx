@@ -41,9 +41,9 @@ export const HeroChapter: React.FC<HeroChapterProps> = ({ onOpenBooking, onExplo
             <span className="text-warm-white/80 font-light italic">Expert Diagnosis.</span>
           </h1>
 
-          {/* Value proposition subtext */}
-          <p className="text-xs sm:text-base lg:text-lg text-muted-light font-normal leading-relaxed max-w-xl">
-            A modern service experience built around your vehicle, the way it’s made, and the people who understand it.
+          {/* Value proposition subtext: Concise & Punchy */}
+          <p className="text-sm sm:text-lg text-muted-light font-normal leading-relaxed max-w-xl">
+            Specialist care for complex vehicles. Precision diagnostics, documented standards, and transparent service.
           </p>
 
           {/* Primary and Secondary CTAs with clear visual hierarchy */}

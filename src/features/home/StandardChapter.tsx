@@ -10,25 +10,25 @@ export const StandardChapter: React.FC<StandardChapterProps> = ({ onSeeHowItWork
     {
       num: '01',
       title: 'Digital Inspection',
-      desc: 'Understand what was found before recommended work is presented. Documented findings and physical observations are recorded systematically.',
+      desc: 'Clear physical findings and electronic scan results recorded before recommendations proceed.',
       icon: ClipboardCheck,
     },
     {
       num: '02',
       title: 'Itemized Estimates',
-      desc: 'See the recommended scope clearly before service proceeds. Parts, quantities, and labor are itemized with clear distinction between immediate and future recommendations.',
+      desc: 'Parts, labor, and costs itemized upfront with immediate vs future priorities clearly distinguished.',
       icon: Calculator,
     },
     {
       num: '03',
       title: 'Customer Approval',
-      desc: 'You decide what work moves forward. No surprise invoices or unapproved repairs—every line item requires explicit authorization.',
+      desc: 'You decide what work proceeds. No unapproved work—every item requires explicit authorization.',
       icon: UserCheck,
     },
     {
       num: '04',
       title: 'Quality Control',
-      desc: 'Completed work passes through a defined quality-check stage before the vehicle is prepared for collection and handover.',
+      desc: 'Every completed job is verified through a structured quality-check before vehicle handover.',
       icon: ShieldCheck,
     },
   ];

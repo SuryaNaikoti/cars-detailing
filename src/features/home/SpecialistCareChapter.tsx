@@ -58,8 +58,8 @@ export const SpecialistCareChapter: React.FC<SpecialistCareChapterProps> = ({
               <span className="text-warm-white/70 font-light italic">for Extraordinary Vehicles</span>
             </h2>
 
-            <p className="text-xs sm:text-base text-muted leading-relaxed font-light">
-              High-performance European platforms demand calibrated diagnostic hardware, exact fluid dynamics, and structured technical protocols. Every vehicle entering our workshop undergoes documented physical inspections, transparent line-item estimates, controlled execution, and structured road verification before handover.
+            <p className="text-sm sm:text-base text-muted-light leading-relaxed font-light">
+              Expert servicing, calibrated diagnostics, and mechanical repairs without the guesswork. Every vehicle receives documented inspections, transparent estimates, and thorough road verification.
             </p>
 
             {/* Three Triad Values */}
