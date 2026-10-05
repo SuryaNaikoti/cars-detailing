@@ -101,8 +101,36 @@ export function App() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isHeroVisible, setIsHeroVisible] = useState(true);
   const [selectedVehicle, setSelectedVehicle] = useState<{ make: string; model: string; year: number } | null>(null);
   const [selectedServiceSlug, setSelectedServiceSlug] = useState<string | null>(null);
+
+  // Monitor Hero section visibility to hide sticky mobile CTA while user is within the hero
+  useEffect(() => {
+    if (currentPage !== 'home') {
+      setIsHeroVisible(false);
+      return;
+    }
+
+    const heroEl = document.getElementById('hero');
+    if (!heroEl) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry) {
+          // If any meaningful part of the hero is intersecting, consider it visible
+          setIsHeroVisible(entry.isIntersecting);
+        }
+      },
+      {
+        threshold: 0.05, // triggers when hero enters/leaves viewport
+      }
+    );
+
+    observer.observe(heroEl);
+    return () => observer.disconnect();
+  }, [currentPage]);
 
   const handleOpenBooking = (serviceSlug?: string) => {
     if (currentPage === 'home') {
@@ -325,7 +353,11 @@ export function App() {
           />
 
           <StickyMobileCTA
-            isVisible={!isModalOpen && !isMobileMenuOpen}
+            isVisible={
+              !isModalOpen &&
+              !isMobileMenuOpen &&
+              (currentPage !== 'home' || !isHeroVisible)
+            }
             onOpenBooking={() => {
               if (currentPage === 'home') {
                 handleNavigateSection('#action-hub');
