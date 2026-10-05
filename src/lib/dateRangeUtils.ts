@@ -9,6 +9,7 @@ export type DateRangePreset =
   | 'current_month'
   | 'previous_month'
   | 'last_30_days'
+  | 'all_time'
   | 'custom';
 
 export interface DateRange {
@@ -24,13 +25,14 @@ export interface DateRange {
 export const SYSTEM_NOW = new Date('2026-09-21T19:55:00Z');
 
 export const DATE_RANGE_OPTIONS: { id: DateRangePreset; label: string }[] = [
+  { id: 'current_month', label: 'Current Month (Sep 2026)' },
   { id: 'today', label: 'Today (21 Sep 2026)' },
   { id: 'yesterday', label: 'Yesterday (20 Sep 2026)' },
   { id: 'this_week', label: 'This Week' },
   { id: 'last_week', label: 'Last Week' },
-  { id: 'current_month', label: 'Current Month (Sep 2026)' },
   { id: 'previous_month', label: 'Previous Month (Aug 2026)' },
   { id: 'last_30_days', label: 'Last 30 Days' },
+  { id: 'all_time', label: 'All Time' },
   { id: 'custom', label: 'Custom Range' },
 ];
 
@@ -86,6 +88,11 @@ export function getDateRange(
     case 'last_30_days': {
       start = new Date(Date.UTC(year, month, date - 30, 0, 0, 0, 0));
       end = new Date(Date.UTC(year, month, date, 23, 59, 59, 999));
+      break;
+    }
+    case 'all_time': {
+      start = new Date(Date.UTC(2020, 0, 1, 0, 0, 0, 0));
+      end = new Date(Date.UTC(2030, 11, 31, 23, 59, 59, 999));
       break;
     }
     case 'custom': {

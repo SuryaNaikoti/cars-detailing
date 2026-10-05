@@ -156,11 +156,12 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onOpenBooking, onSel
                       href={generateWhatsAppLink({ service: service.name })}
                       target="_blank"
                       rel="noopener noreferrer"
+                      className="w-full sm:w-auto"
                     >
                       <Button
                         variant="outline"
                         size="md"
-                        className="text-xs sm:text-sm uppercase tracking-wider border-graphite-border hover:border-warm-white/40 min-h-[44px]"
+                        className="w-full text-xs sm:text-sm uppercase tracking-wider border-graphite-border hover:border-warm-white/40 min-h-[44px]"
                       >
                         WhatsApp Consultation
                       </Button>
@@ -175,24 +176,25 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onOpenBooking, onSel
 
       </Container>
 
-      {/* In-place Service Detail Modal */}
+      {/* In-place Service Detail Modal - Full mobile sheet on <640px */}
       {selectedDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian/90 backdrop-blur-md">
-          <div className="bg-graphite border border-graphite-border rounded-xs max-w-2xl w-full p-6 sm:p-8 space-y-6">
-            <div className="flex items-start justify-between pb-4 border-b border-graphite-border">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-obsidian/90 backdrop-blur-md overflow-y-auto">
+          <div className="bg-graphite border border-graphite-border rounded-xs max-w-2xl w-full p-5 sm:p-8 space-y-5 my-auto max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between pb-4 border-b border-graphite-border gap-2">
               <div className="space-y-1">
-                <span className="text-[10px] font-mono text-accent-gold uppercase tracking-widest">
+                <span className="text-[10px] font-mono text-accent-gold uppercase tracking-widest block">
                   MODULE 0{selectedDetail.display_order} // SPECIFICATION
                 </span>
-                <h3 className="text-2xl font-bold uppercase text-warm-white">
+                <h3 className="text-xl sm:text-2xl font-bold uppercase text-warm-white">
                   {selectedDetail.name}
                 </h3>
               </div>
               <button
                 onClick={() => setSelectedDetail(null)}
-                className="text-xs font-bold uppercase text-muted hover:text-warm-white"
+                className="text-xs font-bold uppercase text-muted hover:text-warm-white px-2 py-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Close modal"
               >
-                Close [ESC]
+                Close ✕
               </button>
             </div>
 
@@ -216,11 +218,12 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onOpenBooking, onSel
               </div>
             )}
 
-            <div className="pt-4 border-t border-graphite-border flex justify-end gap-3">
+            <div className="pt-4 border-t border-graphite-border flex flex-col sm:flex-row justify-end gap-3">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setSelectedDetail(null)}
+                className="w-full sm:w-auto min-h-[44px]"
               >
                 Back to Catalogue
               </Button>
@@ -232,7 +235,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onOpenBooking, onSel
                   setSelectedDetail(null);
                   onOpenBooking(slug);
                 }}
-                className="font-bold text-xs uppercase"
+                className="w-full sm:w-auto font-bold text-xs uppercase min-h-[44px]"
               >
                 Request Booking →
               </Button>

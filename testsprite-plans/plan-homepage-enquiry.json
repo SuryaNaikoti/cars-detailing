@@ -1,0 +1,23 @@
+{
+  "projectId": "adafe0b0-df14-4bf4-8c10-3b1f4691ee41",
+  "type": "frontend",
+  "name": "Public Homepage and Smart Enquiry Intake",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to / and verify the luxury specialist headline is visible"
+    },
+    {
+      "type": "action",
+      "description": "Scroll to the vehicle consultation section and select marque Porsche, model 911 Carrera, year 2023, and Diagnostics service"
+    },
+    {
+      "type": "action",
+      "description": "Click the check service options button to open the Smart Enquiry modal"
+    },
+    {
+      "type": "assertion",
+      "description": "The Smart Enquiry modal opens with the selected Porsche 911 Carrera details pre-filled"
+    }
+  ]
+}

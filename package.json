@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
+    "test:quote-security": "node tests/run_quote_content_security_qa.js",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -5,13 +5,13 @@ import { StickyMobileCTA } from './components/layout/StickyMobileCTA';
 import { HeroChapter } from './features/home/HeroChapter';
 import { SpecialistCareChapter } from './features/home/SpecialistCareChapter';
 import { StandardChapter } from './features/home/StandardChapter';
-import { VehicleConsultationChapter } from './features/home/VehicleConsultationChapter';
 import { ServicesChapter } from './features/home/ServicesChapter';
 import { ProcessChapter } from './features/home/ProcessChapter';
 import { VisibilityChapter } from './features/home/VisibilityChapter';
 import { ServiceHistoryChapter } from './features/home/ServiceHistoryChapter';
 import { CampaignChapter } from './features/home/CampaignChapter';
 import { ClientExperienceChapter } from './features/home/ClientExperienceChapter';
+import { ActionHubChapter } from './features/home/ActionHubChapter';
 import { LocationChapter } from './features/home/LocationChapter';
 import { FinalCtaChapter } from './features/home/FinalCtaChapter';
 import { SmartEnquiryModal } from './components/shared/SmartEnquiryModal';
@@ -100,47 +100,56 @@ export function App() {
   }, []);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<{ make: string; model: string; year: number } | null>(null);
   const [selectedServiceSlug, setSelectedServiceSlug] = useState<string | null>(null);
 
   const handleOpenBooking = (serviceSlug?: string) => {
-    setSelectedVehicle(null);
-    setSelectedServiceSlug(serviceSlug || null);
-    setIsModalOpen(true);
+    if (currentPage === 'home') {
+      if (serviceSlug) setSelectedServiceSlug(serviceSlug);
+      handleNavigateSection('#action-hub');
+    } else {
+      setSelectedVehicle(null);
+      setSelectedServiceSlug(serviceSlug || null);
+      setIsModalOpen(true);
+    }
   };
 
   const handleNavigateSection = (href: string) => {
+    const id = href.replace('#', '');
+    const scrollTarget = () => {
+      const el = document.getElementById(id);
+      if (el) {
+        const headerOffset = 84;
+        const rect = el.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const targetTop = rect.top + scrollTop - headerOffset;
+        window.scrollTo({
+          top: Math.max(0, targetTop),
+          behavior: 'smooth'
+        });
+      }
+    };
+
     if (currentPage !== 'home') {
       setCurrentPage('home');
-      setTimeout(() => {
-        const id = href.replace('#', '');
-        const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      setTimeout(scrollTarget, 100);
+      setTimeout(scrollTarget, 300);
     } else {
-      const id = href.replace('#', '');
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      // Execute with microtask/RAF to ensure state updates (like selected service) take effect
+      requestAnimationFrame(() => {
+        scrollTarget();
+      });
     }
   };
 
   const handleOpenSelector = () => {
-    handleNavigateSection('#vehicle-consultation');
+    handleNavigateSection('#action-hub');
   };
 
-  const handleStartEnquiryWithContext = (
-    vehicle: { make: string; model: string; year: number },
-    serviceSlug?: string
-  ) => {
-    setSelectedVehicle(vehicle);
-    setSelectedServiceSlug(serviceSlug || null);
-    setIsModalOpen(true);
-  };
-
-  const handleClaimSampleOffer = () => {
-    setSelectedVehicle({ make: 'Sample Marque', model: 'Luxury Series', year: 2023 });
-    setSelectedServiceSlug('periodic-service');
-    setIsModalOpen(true);
+  const handleSelectServiceForActionHub = (slug: string) => {
+    setSelectedServiceSlug(slug);
+    handleNavigateSection('#action-hub');
   };
 
   return (
@@ -149,10 +158,25 @@ export function App() {
       {/* 1. Header Navigation - Clean single top header on public customer pages */}
       {currentPage !== 'dashboard' && currentPage !== 'private-workshop-os' && (
         <Header
+          currentPage={currentPage}
+          isMobileMenuOpen={isMobileMenuOpen}
+          onMobileMenuChange={setIsMobileMenuOpen}
           onOpenBooking={() => handleOpenBooking()}
           onOpenSelector={handleOpenSelector}
-          onNavigateHome={() => setCurrentPage('home')}
+          onNavigateHome={() => {
+            setCurrentPage('home');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
           onNavigateSection={handleNavigateSection}
+          onNavigatePage={(page) => {
+            if (page === 'status') {
+              setActiveToken('track-bmw-jc2047');
+              setCurrentPage('status');
+            } else {
+              setCurrentPage(page);
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
         />
       )}
 
@@ -160,42 +184,33 @@ export function App() {
       <main className="flex-grow">
         {currentPage === 'home' && (
           <>
-            {/* 01. Cinematic Hero */}
+            {/* 01. HERO */}
             <HeroChapter
-              onOpenBooking={() => handleNavigateSection('#vehicle-consultation')}
+              onOpenBooking={() => handleNavigateSection('#action-hub')}
               onExploreServices={() => handleNavigateSection('#services')}
             />
 
-            {/* 02. Specialist Care */}
+            {/* 02. SPECIALIST CARE */}
             <SpecialistCareChapter
               onDiscoverStandard={() => handleNavigateSection('#torque-standard')}
             />
 
-            {/* 03. The Torque Expert Standard (4 Strategic Trust Pillars) */}
+            {/* 03. TORQUE EXPERT STANDARD */}
             <StandardChapter
               onSeeHowItWorks={() => handleNavigateSection('#process')}
             />
 
-            {/* 04. What Do You Drive? (Primary Qualification / Conversion) */}
-            <VehicleConsultationChapter
-              onStartEnquiryWithContext={handleStartEnquiryWithContext}
-              selectedServicePreselect={selectedServiceSlug || undefined}
-            />
-
-            {/* 05. Specialist Services (6 Disciplines with Problem Prompts & Micro-CTAs) */}
+            {/* 04. SPECIALIST SERVICES / SERVICE DISCOVERY */}
             <ServicesChapter
-              onSelectServiceForBooking={(slug) => {
-                setSelectedServiceSlug(slug);
-                handleNavigateSection('#vehicle-consultation');
-              }}
+              onSelectServiceForBooking={handleSelectServiceForActionHub}
             />
 
-            {/* 06. From Concern to Collection (7 Canonical Stages) */}
+            {/* 05. FROM CONCERN TO COLLECTION */}
             <ProcessChapter
-              onStartServiceRequest={() => handleNavigateSection('#vehicle-consultation')}
+              onStartServiceRequest={() => handleNavigateSection('#action-hub')}
             />
 
-            {/* 07. Your Vehicle. Your Visibility. (Sanitized Customer Status Showcase) */}
+            {/* 06. YOUR VEHICLE. YOUR VISIBILITY. */}
             <VisibilityChapter
               onViewServiceStatus={() => {
                 setActiveToken('track-bmw-jc2047');
@@ -204,25 +219,40 @@ export function App() {
               }}
             />
 
-            {/* 08. Your Vehicle's History (Archival Lifecycle & Long-Term Value) */}
+            {/* 07. YOUR VEHICLE'S HISTORY. KEPT WITH THE SERVICE. */}
             <ServiceHistoryChapter />
 
-            {/* 09. Featured Service / Package (Starting from ₹14,999) */}
+            {/* 08. FEATURED SERVICE / PACKAGE */}
             <CampaignChapter
-              onClaimSampleOffer={handleClaimSampleOffer}
+              onClaimSampleOffer={() => {
+                setSelectedServiceSlug('periodic-service');
+                handleNavigateSection('#action-hub');
+              }}
             />
 
-            {/* 10. Customer Experience & 11. FAQ Objection Handling */}
+            {/* 09. CUSTOMER EXPERIENCE & 10. FAQ */}
             <ClientExperienceChapter
               onContactWorkshop={() => handleNavigateSection('#location')}
             />
 
-            {/* 12. The Workshop (Location, Hours, Directions) */}
+            {/* 11. ACTION HUB (Consolidated Primary Conversion Destination) */}
+            <ActionHubChapter
+              selectedServicePreselect={selectedServiceSlug}
+              onServiceSelect={(slug) => setSelectedServiceSlug(slug)}
+              onViewServiceStatus={() => {
+                setActiveToken('track-bmw-jc2047');
+                setCurrentPage('status');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onContactWorkshop={() => handleNavigateSection('#location')}
+            />
+
+            {/* 12. THE WORKSHOP (Location, Directions, Hours) */}
             <LocationChapter />
 
-            {/* 13. Final Conversion CTA */}
+            {/* 13. FINAL CTA */}
             <FinalCtaChapter
-              onBookService={() => handleNavigateSection('#vehicle-consultation')}
+              onBookService={() => handleNavigateSection('#action-hub')}
               onContactWorkshop={() => handleNavigateSection('#location')}
             />
           </>
@@ -295,10 +325,10 @@ export function App() {
           />
 
           <StickyMobileCTA
-            isVisible={!isModalOpen}
+            isVisible={!isModalOpen && !isMobileMenuOpen}
             onOpenBooking={() => {
               if (currentPage === 'home') {
-                handleNavigateSection('#vehicle-consultation');
+                handleNavigateSection('#action-hub');
               } else {
                 handleOpenBooking();
               }

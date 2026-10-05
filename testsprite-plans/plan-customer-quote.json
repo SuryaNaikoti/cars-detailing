@@ -1,0 +1,19 @@
+{
+  "projectId": "adafe0b0-df14-4bf4-8c10-3b1f4691ee41",
+  "type": "frontend",
+  "name": "Customer Digital Quote and Authorization Review",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to /quote/demo-quote-porsche"
+    },
+    {
+      "type": "assertion",
+      "description": "The page displays Estimate EST-2026-2049 and vehicle Porsche Macan GTS"
+    },
+    {
+      "type": "assertion",
+      "description": "The Total Quoted Scope amount and authorization button are displayed"
+    }
+  ]
+}

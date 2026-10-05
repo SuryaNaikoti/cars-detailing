@@ -1,0 +1,19 @@
+{
+  "projectId": "adafe0b0-df14-4bf4-8c10-3b1f4691ee41",
+  "type": "frontend",
+  "name": "Workshop OS Floor and Bayside Operations",
+  "planSteps": [
+    {
+      "type": "action",
+      "description": "Navigate to /dashboard?module=floor and wait for workshop floor to load"
+    },
+    {
+      "type": "assertion",
+      "description": "The workshop floor heading is visible and exactly 4 service bays BAY 01 through BAY 04 are displayed"
+    },
+    {
+      "type": "assertion",
+      "description": "Active vehicles on floor shows active count and BAY 01 displays active job JC-2047"
+    }
+  ]
+}

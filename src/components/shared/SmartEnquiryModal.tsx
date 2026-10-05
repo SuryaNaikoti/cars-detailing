@@ -99,7 +99,13 @@ export const SmartEnquiryModal: React.FC<SmartEnquiryModalProps> = ({
   const selectedServiceObj = APPROVED_SERVICES.find((s) => s.slug === service);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-obsidian/85 backdrop-blur-sm overflow-y-auto">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Request Diagnostic or Workshop Appointment"
+      data-testid="smart-enquiry-modal"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-obsidian/85 backdrop-blur-sm overflow-y-auto"
+    >
       <div className="relative bg-graphite-card border border-graphite-subtle rounded-t-lg sm:rounded-md w-full max-w-xl max-h-[90vh] sm:max-h-[85vh] flex flex-col p-5 sm:p-8 my-0 sm:my-8 shadow-2xl animate-in fade-in slide-in-from-bottom-6 sm:zoom-in-95 duration-200">
         
         {/* Close Button */}

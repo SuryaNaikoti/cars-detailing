@@ -21,10 +21,12 @@ import type {
   TechnicianRecord,
   ServiceReminder,
   CustomerSafeJob,
+  CustomerSafeQuoteDTO,
   TeamMemberRecord,
   WorkshopProfileConfig,
   SystemAuditEvent,
 } from '../types';
+import { toCustomerSafeQuoteDTO } from '../features/quotes/customerQuoteDto';
 
 const JOBS_KEY = 'te_workshop_jobs_v3';
 const CUSTOMERS_KEY = 'te_workshop_customers_v3';
@@ -35,6 +37,8 @@ const INSPECTIONS_KEY = 'te_workshop_inspections_v3';
 const ESTIMATES_KEY = 'te_workshop_estimates_v3';
 const TECHNICIANS_KEY = 'te_workshop_technicians_v3';
 const REMINDERS_KEY = 'te_workshop_reminders_v3';
+const TEAM_MEMBERS_KEY = 'te_workshop_team_members_v4';
+const WORKSHOP_PROFILE_KEY = 'te_workshop_profile_v4';
 
 // Stage Human Readable Mapping
 export const STAGE_DISPLAY_MAP: Record<JobCardStatus, string> = {
@@ -3022,6 +3026,20 @@ const SEED_REMINDERS: ServiceReminder[] = [
 ];
 
 // Helper to safely access localStorage with fallback
+export const STORAGE_KEYS = [
+  JOBS_KEY,
+  CUSTOMERS_KEY,
+  VEHICLES_KEY,
+  LEADS_KEY,
+  APPOINTMENTS_KEY,
+  INSPECTIONS_KEY,
+  ESTIMATES_KEY,
+  TECHNICIANS_KEY,
+  REMINDERS_KEY,
+  TEAM_MEMBERS_KEY,
+  WORKSHOP_PROFILE_KEY,
+];
+
 function loadFromStorage<T>(key: string, seed: T): T {
   try {
     const raw = localStorage.getItem(key);
@@ -3036,9 +3054,39 @@ function loadFromStorage<T>(key: string, seed: T): T {
 function saveToStorage<T>(key: string, data: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(data));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('te_storage_updated', { detail: { key } }));
+    }
   } catch {
     // Storage quota or restriction
   }
+}
+
+/**
+ * Subscribes to storage changes across both different browser tabs (native storage event)
+ * and the active browser tab (te_storage_updated custom event).
+ */
+export function subscribeToStorageUpdates(callback: (key: string | null) => void): () => void {
+  if (typeof window === 'undefined') return () => {};
+
+  const handleStorage = (e: StorageEvent) => {
+    if (!e.key || STORAGE_KEYS.includes(e.key)) {
+      callback(e.key);
+    }
+  };
+
+  const handleCustom = (e: Event) => {
+    const customEvt = e as CustomEvent<{ key?: string }>;
+    callback(customEvt.detail?.key || null);
+  };
+
+  window.addEventListener('storage', handleStorage);
+  window.addEventListener('te_storage_updated', handleCustom);
+
+  return () => {
+    window.removeEventListener('storage', handleStorage);
+    window.removeEventListener('te_storage_updated', handleCustom);
+  };
 }
 
 // ============================================================
@@ -3974,6 +4022,18 @@ export function getEstimateByToken(token: string): EstimateRecord | null {
   return found || null;
 }
 
+/**
+ * Customer Quote Public Data Serialization Layer.
+ * Strictly projects only allowlisted, customer-safe fields via CustomerSafeQuoteDTO.
+ * Sanitizes all internal notes, technician allocations, requisition references,
+ * and admin copy.
+ */
+export function getCustomerSafeQuoteView(token: string): CustomerSafeQuoteDTO | null {
+  const estimate = getEstimateByToken(token);
+  if (!estimate) return null;
+  return toCustomerSafeQuoteDTO(estimate);
+}
+
 export function saveEstimate(estimate: EstimateRecord): void {
   const estimates = getEstimates();
   estimates[estimate.job_id] = estimate;
@@ -4706,9 +4766,6 @@ export function getStoredJobByToken(token: string): any | null {
 // ============================================================
 // SYSTEM V4.0: TEAM MEMBERS, WORKSHOP PROFILE & AUDIT LOGS
 // ============================================================
-
-const TEAM_MEMBERS_KEY = 'te_workshop_team_members_v4';
-const WORKSHOP_PROFILE_KEY = 'te_workshop_profile_v4';
 
 export const SEED_TEAM_MEMBERS: TeamMemberRecord[] = [
   {

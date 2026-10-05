@@ -628,6 +628,42 @@ export interface ServiceReminder {
   contacted_at?: string;
 }
 
+export interface CustomerSafeQuoteItemDTO {
+  id: string;
+  description: string;
+  type: EstimateItemType;
+  category?: string;
+  quantity: number;
+  unit?: string;
+  unitPrice: number;
+  lineTotal: number;
+  approvalStatus: EstimateApprovalStatus;
+  sourceRecommendation?: string;
+  customerNote?: string;
+}
+
+export interface CustomerSafeQuoteDTO {
+  id: string;
+  estimateNumber: string;
+  customerName: string;
+  vehicleSummary: string;
+  registration?: string;
+  createdDate: string;
+  validityDate: string;
+  status: EstimateStatus;
+  items: CustomerSafeQuoteItemDTO[];
+  labourTotal: number;
+  partsTotal: number;
+  discountTotal: number;
+  subtotal: number;
+  total: number;
+  approvedTotal: number;
+  declinedTotal: number;
+  publicToken: string;
+  customerNotes?: string;
+  policyNotice: string;
+}
+
 export interface CustomerSafeJob {
   job_id: string;
   customer_display_name: string;

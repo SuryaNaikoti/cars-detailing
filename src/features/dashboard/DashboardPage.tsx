@@ -44,6 +44,7 @@ import {
   getWorkshopProfile,
   saveWorkshopProfile,
   getSystemAuditEvents,
+  subscribeToStorageUpdates,
 } from '../../lib/demoStore';
 
 import type {
@@ -111,6 +112,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
   useEffect(() => {
     refreshStore();
+    const unsubscribe = subscribeToStorageUpdates((_key) => {
+      refreshStore();
+    });
+    return () => unsubscribe();
   }, []);
 
   const handleOpenJob = (id: string) => {

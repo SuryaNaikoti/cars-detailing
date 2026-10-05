@@ -13,7 +13,7 @@ export const FinalCtaChapter: React.FC<FinalCtaChapterProps> = ({
   return (
     <section id="final-cta" className="py-24 sm:py-32 bg-obsidian-subtle border-b border-graphite-border relative overflow-hidden">
       {/* Subtle ambient lighting / gold gradient accent */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-accent-gold/5 blur-[120px] pointer-events-none rounded-full" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] max-w-full h-[300px] bg-accent-gold/5 blur-[120px] pointer-events-none rounded-full" />
 
       <div className="max-w-editorial mx-auto px-4 sm:px-6 lg:px-12 relative z-10 text-center space-y-8">
         
@@ -28,14 +28,14 @@ export const FinalCtaChapter: React.FC<FinalCtaChapterProps> = ({
 
         {/* Headline */}
         <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tightest text-warm-white uppercase leading-none max-w-4xl mx-auto">
-          YOUR CAR DESERVES
+          YOUR VEHICLE DESERVES
           <br />
-          <span className="text-muted">SPECIALIST CARE.</span>
+          <span className="text-muted">THE RIGHT KIND OF ATTENTION.</span>
         </h2>
 
         {/* Supporting Line */}
         <p className="text-base sm:text-lg text-muted font-light max-w-xl mx-auto leading-relaxed">
-          Start with your vehicle. We&apos;ll take it from there.
+          Tell us about your vehicle and what it needs. We&apos;ll help you choose the right service.
         </p>
 
         {/* Conversion Action Buttons */}
@@ -46,7 +46,7 @@ export const FinalCtaChapter: React.FC<FinalCtaChapterProps> = ({
             onClick={onBookService}
             className="w-full sm:w-auto min-h-[48px] px-8 py-3.5 bg-warm-white hover:bg-white text-obsidian text-xs font-extrabold uppercase tracking-widest rounded-xs transition-all shadow-lg hover:shadow-warm-white/10 flex items-center justify-center gap-2 group cursor-pointer"
           >
-            <span>BOOK A SERVICE</span>
+            <span>REQUEST SERVICE</span>
             <ArrowRight className="w-4 h-4 text-obsidian group-hover:translate-x-0.5 transition-transform" />
           </button>
 

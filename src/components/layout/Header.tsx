@@ -8,6 +8,10 @@ export interface HeaderProps {
   onOpenSelector?: () => void;
   onNavigateHome?: () => void;
   onNavigateSection?: (href: string) => void;
+  onNavigatePage?: (page: 'home' | 'services' | 'book' | 'faqs' | 'contact' | 'status') => void;
+  currentPage?: string;
+  isMobileMenuOpen?: boolean;
+  onMobileMenuChange?: (open: boolean) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -15,15 +19,29 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSelector,
   onNavigateHome,
   onNavigateSection,
+  onNavigatePage,
+  currentPage = 'home',
+  isMobileMenuOpen: controlledOpen,
+  onMobileMenuChange,
 }) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const mobileMenuOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
+
+  const setMobileMenuOpen = (open: boolean) => {
+    if (controlledOpen === undefined) {
+      setInternalOpen(open);
+    }
+    if (onMobileMenuChange) {
+      onMobileMenuChange(open);
+    }
+  };
 
   const navLinks = [
-    { label: 'Services', href: '#services' },
-    { label: 'Vehicle Selector', href: '#vehicle-consultation', onClick: onOpenSelector },
+    { label: 'Services', href: '#services', page: 'services' as const },
     { label: 'Process', href: '#process' },
-    { label: 'FAQ', href: '#faq' },
-    { label: 'Workshop', href: '#location' },
+    { label: 'FAQ', href: '#faq', page: 'faqs' as const },
+    { label: 'Workshop', href: '#location', page: 'contact' as const },
+    { label: 'Book Service', href: '#action-hub', onClick: onOpenSelector },
   ];
 
   // Prevent background scroll when mobile menu drawer is open
@@ -38,8 +56,26 @@ export const Header: React.FC<HeaderProps> = ({
     };
   }, [mobileMenuOpen]);
 
+  const handleLinkClick = (e: React.MouseEvent, link: typeof navLinks[0]) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+
+    // Ensure body scroll is unlocked before executing scroll/navigation
+    document.body.style.overflow = '';
+
+    setTimeout(() => {
+      if (link.onClick) {
+        link.onClick();
+      } else if (currentPage !== 'home' && link.page && onNavigatePage) {
+        onNavigatePage(link.page);
+      } else if (onNavigateSection) {
+        onNavigateSection(link.href);
+      }
+    }, 50);
+  };
+
   return (
-    <header className="sticky top-0 z-40 bg-obsidian/95 backdrop-blur-md border-b border-graphite-border/70 transition-colors">
+    <header className="sticky top-0 z-50 bg-obsidian/95 backdrop-blur-md border-b border-graphite-border/70 transition-colors">
       <div className="max-w-editorial mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
@@ -47,8 +83,10 @@ export const Header: React.FC<HeaderProps> = ({
           <a
             href="#"
             onClick={(e) => {
+              e.preventDefault();
+              setMobileMenuOpen(false);
+              document.body.style.overflow = '';
               if (onNavigateHome) {
-                e.preventDefault();
                 onNavigateHome();
               }
             }}
@@ -69,10 +107,12 @@ export const Header: React.FC<HeaderProps> = ({
                 key={link.label}
                 href={link.href}
                 onClick={(e) => {
+                  e.preventDefault();
                   if (link.onClick) {
                     link.onClick();
+                  } else if (currentPage !== 'home' && link.page && onNavigatePage) {
+                    onNavigatePage(link.page);
                   } else if (onNavigateSection) {
-                    e.preventDefault();
                     onNavigateSection(link.href);
                   }
                 }}
@@ -113,70 +153,121 @@ export const Header: React.FC<HeaderProps> = ({
               id="mobile-menu-trigger"
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2.5 text-muted-light hover:text-warm-white focus-visible:ring-1 focus-visible:ring-accent-gold rounded-xs min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-2.5 text-muted-light hover:text-warm-white focus-visible:ring-1 focus-visible:ring-accent-gold rounded-xs min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer"
               aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation-drawer"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-6 h-6 text-accent-gold" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Drawer Overlay */}
+      {/* Mobile Backdrop & Drawer */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 top-20 z-50 md:hidden bg-obsidian/98 backdrop-blur-xl border-t border-graphite-border px-6 py-6 flex flex-col justify-between overflow-y-auto animate-in fade-in slide-in-from-top-4 duration-200">
-          <nav className="flex flex-col space-y-1">
-            <span className="text-[10px] font-mono tracking-widest text-accent-gold uppercase font-semibold pb-2 border-b border-graphite-border">
-              Navigation Menu
-            </span>
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={(e) => {
-                  if (link.onClick) {
-                    link.onClick();
-                  } else if (onNavigateSection) {
-                    e.preventDefault();
-                    onNavigateSection(link.href);
-                  }
-                  setMobileMenuOpen(false);
-                }}
-                className="text-base font-semibold tracking-tight text-warm-white py-3.5 border-b border-graphite-border/40 hover:text-accent-gold transition-colors flex items-center justify-between min-h-[48px]"
-              >
-                <span>{link.label}</span>
-                <span className="text-xs font-mono text-muted-dark">→</span>
-              </a>
-            ))}
-          </nav>
-          
-          <div className="pt-6 mt-4 border-t border-graphite-border flex flex-col gap-3 safe-pb">
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={() => {
-                if (onOpenBooking) onOpenBooking();
-                setMobileMenuOpen(false);
-              }}
-              className="w-full text-xs font-bold uppercase tracking-wider py-4 bg-warm-white text-obsidian min-h-[48px]"
-            >
-              <Wrench className="w-4 h-4 mr-2" />
-              Book Workshop Service
-            </Button>
-            <a
-              href={generateWhatsAppLink({})}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full"
-            >
-              <Button variant="outline" size="lg" className="w-full text-xs gap-2 py-4 border-graphite-border text-warm-white uppercase tracking-wider min-h-[48px]">
-                <MessageSquare className="w-4 h-4 text-accent-gold" />
-                WhatsApp an Expert
-              </Button>
-            </a>
+        <>
+          {/* Dimmed backdrop to close drawer when clicking anywhere outside */}
+          <div
+            id="mobile-drawer-backdrop"
+            onClick={() => setMobileMenuOpen(false)}
+            className="fixed inset-0 top-20 z-40 bg-black/70 backdrop-blur-sm md:hidden animate-in fade-in duration-200"
+            aria-hidden="true"
+          />
+
+          {/* Mobile Drawer */}
+          <div 
+            id="mobile-navigation-drawer"
+            className="fixed inset-x-0 top-20 z-50 md:hidden flex flex-col bg-obsidian border-b border-graphite-border shadow-2xl animate-in fade-in slide-in-from-top-3 duration-200 overflow-hidden"
+            style={{ maxHeight: 'calc(100dvh - 5rem)' }}
+          >
+            <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 flex flex-col justify-between max-h-[calc(100dvh-5rem)]">
+              <nav className="flex flex-col space-y-1">
+                <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
+                  <span className="text-[10px] font-mono tracking-widest text-accent-gold uppercase font-semibold">
+                    Navigation Menu
+                  </span>
+                  <span className="text-[10px] text-muted-dark uppercase tracking-wider font-mono">
+                    {currentPage.toUpperCase()}
+                  </span>
+                </div>
+
+                {navLinks.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    onClick={(e) => handleLinkClick(e, link)}
+                    className="text-base font-semibold tracking-tight text-warm-white py-3 border-b border-graphite-border/40 hover:text-accent-gold active:text-accent-gold transition-colors flex items-center justify-between min-h-[48px] cursor-pointer"
+                  >
+                    <span>{link.label}</span>
+                    <span className="text-xs font-mono text-muted-dark">→</span>
+                  </a>
+                ))}
+
+                {/* Extended Mobile Direct Page Links */}
+                {onNavigatePage && (
+                  <div className="pt-2 flex flex-col space-y-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        document.body.style.overflow = '';
+                        onNavigatePage('status');
+                      }}
+                      className="text-left text-xs uppercase tracking-wider text-muted-light py-2.5 hover:text-accent-gold flex items-center justify-between min-h-[44px] cursor-pointer"
+                    >
+                      <span>Track Live Service Status</span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-accent-gold/10 text-accent-gold border border-accent-gold/20">LIVE</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        document.body.style.overflow = '';
+                        onNavigatePage('contact');
+                      }}
+                      className="text-left text-xs uppercase tracking-wider text-muted-light py-2.5 hover:text-accent-gold flex items-center justify-between min-h-[44px] cursor-pointer"
+                    >
+                      <span>Direct Workshop Contact & Directions</span>
+                      <span className="text-xs font-mono text-muted-dark">→</span>
+                    </button>
+                  </div>
+                )}
+              </nav>
+              
+              <div className="pt-4 mt-3 border-t border-graphite-border flex flex-col gap-2.5 pb-6">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    document.body.style.overflow = '';
+                    if (onOpenBooking) onOpenBooking();
+                  }}
+                  className="w-full text-xs font-bold uppercase tracking-wider py-3.5 bg-warm-white text-obsidian min-h-[48px] cursor-pointer"
+                >
+                  <Wrench className="w-4 h-4 mr-2" />
+                  Book Workshop Service
+                </Button>
+                <a
+                  href={generateWhatsAppLink({})}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    document.body.style.overflow = '';
+                  }}
+                  className="w-full"
+                >
+                  <Button variant="outline" size="lg" className="w-full text-xs gap-2 py-3.5 border-graphite-border text-warm-white uppercase tracking-wider min-h-[48px] cursor-pointer">
+                    <MessageSquare className="w-4 h-4 text-accent-gold" />
+                    WhatsApp an Expert
+                  </Button>
+                </a>
+              </div>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </header>
   );

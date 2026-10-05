@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Container } from '../../components/layout/SectionHeader';
 import { Button } from '../../components/ui/Button';
-import { getEstimateByToken, recordEstimateDecisions } from '../../lib/demoStore';
+import { getCustomerSafeQuoteView, recordEstimateDecisions } from '../../lib/demoStore';
 import { CheckCircle2, ShieldCheck, XCircle, ArrowLeft, Check, X, Printer } from 'lucide-react';
-import type { EstimateRecord } from '../../types';
+import type { CustomerSafeQuoteDTO } from '../../types';
 
 export interface QuoteViewerPageProps {
   token: string;
@@ -11,25 +11,25 @@ export interface QuoteViewerPageProps {
 }
 
 export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack }) => {
-  const initialEstimate = getEstimateByToken(token);
-  const [estimate, setEstimate] = useState<EstimateRecord | null>(initialEstimate);
+  const initialQuote = getCustomerSafeQuoteView(token);
+  const [quote, setQuote] = useState<CustomerSafeQuoteDTO | null>(initialQuote);
 
   // Individual item decisions state map: item.id -> 'APPROVED' | 'DECLINED' | 'PENDING'
   const [decisions, setDecisions] = useState<Record<string, 'APPROVED' | 'DECLINED' | 'PENDING'>>(() => {
     const initial: Record<string, 'APPROVED' | 'DECLINED' | 'PENDING'> = {};
-    if (initialEstimate?.items) {
-      for (const item of initialEstimate.items) {
-        initial[item.id] = item.approval_status || 'PENDING';
+    if (initialQuote?.items) {
+      for (const item of initialQuote.items) {
+        initial[item.id] = item.approvalStatus || 'PENDING';
       }
     }
     return initial;
   });
 
   const [hasActioned, setHasActioned] = useState<boolean>(
-    initialEstimate?.status === 'APPROVED' ||
-    initialEstimate?.status === 'PARTIALLY_APPROVED' ||
-    initialEstimate?.status === 'DECLINED' ||
-    initialEstimate?.status === 'CONVERTED_TO_WORK'
+    initialQuote?.status === 'APPROVED' ||
+    initialQuote?.status === 'PARTIALLY_APPROVED' ||
+    initialQuote?.status === 'DECLINED' ||
+    initialQuote?.status === 'CONVERTED_TO_WORK'
   );
 
   const [actionMessage, setActionMessage] = useState<string | null>(null);
@@ -44,14 +44,15 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
 
   // Submit all approved
   const handleApproveAll = () => {
-    if (!estimate) return;
+    if (!quote) return;
     const allApproved: Record<string, 'APPROVED'> = {};
-    for (const item of estimate.items) {
+    for (const item of quote.items) {
       allApproved[item.id] = 'APPROVED';
     }
     const res = recordEstimateDecisions(token, allApproved, 'Customer authorized all scope via digital quote portal');
     if (res.success && res.estimate) {
-      setEstimate(res.estimate);
+      const refreshedSafeQuote = getCustomerSafeQuoteView(token);
+      setQuote(refreshedSafeQuote);
       setDecisions(allApproved);
       setHasActioned(true);
       setActionMessage('All work items approved. Your workshop service team has received your authorization.');
@@ -60,14 +61,15 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
 
   // Submit all declined
   const handleDeclineAll = () => {
-    if (!estimate) return;
+    if (!quote) return;
     const allDeclined: Record<string, 'DECLINED'> = {};
-    for (const item of estimate.items) {
+    for (const item of quote.items) {
       allDeclined[item.id] = 'DECLINED';
     }
     const res = recordEstimateDecisions(token, allDeclined, 'Customer declined scope via digital quote portal');
     if (res.success && res.estimate) {
-      setEstimate(res.estimate);
+      const refreshedSafeQuote = getCustomerSafeQuoteView(token);
+      setQuote(refreshedSafeQuote);
       setDecisions(allDeclined);
       setHasActioned(true);
       setActionMessage('Estimate declined. Your dedicated service advisor will contact you to discuss alternatives.');
@@ -76,7 +78,7 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
 
   // Submit custom partial decisions
   const handleConfirmSelected = () => {
-    if (!estimate) return;
+    if (!quote) return;
     const mapToSave: Record<string, 'APPROVED' | 'DECLINED'> = {};
     for (const [id, dec] of Object.entries(decisions)) {
       if (dec === 'APPROVED' || dec === 'DECLINED') {
@@ -85,7 +87,8 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
     }
     const res = recordEstimateDecisions(token, mapToSave, 'Customer confirmed selected items via digital quote portal');
     if (res.success && res.estimate) {
-      setEstimate(res.estimate);
+      const refreshedSafeQuote = getCustomerSafeQuoteView(token);
+      setQuote(refreshedSafeQuote);
       setHasActioned(true);
       setActionMessage(
         res.estimate.status === 'PARTIALLY_APPROVED'
@@ -97,7 +100,7 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
     }
   };
 
-  if (!estimate) {
+  if (!quote) {
     return (
       <div className="py-24 bg-obsidian text-center text-warm-white min-h-[60vh] flex items-center justify-center">
         <Container className="max-w-md">
@@ -114,10 +117,10 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
   }
 
   // Calculate live approved vs total
-  const approvedItemsList = estimate.items.filter((i) => decisions[i.id] === 'APPROVED');
-  const approvedTotalVal = approvedItemsList.reduce((acc, i) => acc + i.line_total, 0);
+  const approvedItemsList = quote.items.filter((i) => decisions[i.id] === 'APPROVED');
+  const approvedTotalVal = approvedItemsList.reduce((acc, i) => acc + i.lineTotal, 0);
 
-  const visibleItems = estimate.items.filter((i) => i.customer_visible !== false);
+  const visibleItems = quote.items;
 
   return (
     <div className="py-12 sm:py-24 bg-obsidian text-warm-white min-h-screen">
@@ -159,9 +162,9 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
             </div>
             <div className="text-right font-mono text-xs text-black">
               <span className="font-bold text-sm block">OFFICIAL ESTIMATE</span>
-              <span>{estimate.estimate_number}</span>
+              <span>{quote.estimateNumber}</span>
               <span className="block text-zinc-600">
-                Date: {new Date(estimate.created_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                Date: {new Date(quote.createdDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
               </span>
             </div>
           </div>
@@ -176,12 +179,12 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tightest uppercase print:text-2xl print:text-black">
-            Estimate {estimate.estimate_number}
+            Estimate {quote.estimateNumber}
           </h1>
           <p className="text-xs sm:text-sm text-muted font-light leading-relaxed print:text-xs print:text-zinc-800">
-            Customer: <strong className="text-warm-white font-medium print:text-black">{estimate.customer_name}</strong> · Vehicle: <strong className="text-warm-white font-medium print:text-black">{estimate.vehicle_summary}</strong>
-            {estimate.registration && (
-              <span> · Reg: <strong className="text-accent-gold font-mono font-medium print:text-black">{estimate.registration}</strong></span>
+            Customer: <strong className="text-warm-white font-medium print:text-black">{quote.customerName}</strong> · Vehicle: <strong className="text-warm-white font-medium print:text-black">{quote.vehicleSummary}</strong>
+            {quote.registration && (
+              <span> · Reg: <strong className="text-accent-gold font-mono font-medium print:text-black">{quote.registration}</strong></span>
             )}
           </p>
         </div>
@@ -196,24 +199,24 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
                 Estimate Identifier
               </span>
               <h3 className="text-xl font-bold text-warm-white font-mono print:text-black print:text-base">
-                {estimate.estimate_number}
+                {quote.estimateNumber}
               </h3>
               <p className="text-xs text-muted font-light print:text-zinc-600">
-                Generated: {new Date(estimate.created_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} · Valid Until: {new Date(estimate.validity_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                Generated: {new Date(quote.createdDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} · Valid Until: {new Date(quote.validityDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
               </p>
             </div>
 
             <div className="flex items-center gap-2">
               <span className={`px-3 py-1.5 rounded-xs text-xs font-bold uppercase tracking-wider font-mono border print:border-black print:text-black print:bg-transparent ${
-                estimate.status === 'APPROVED' || estimate.status === 'CONVERTED_TO_WORK'
+                quote.status === 'APPROVED' || quote.status === 'CONVERTED_TO_WORK'
                   ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
-                  : estimate.status === 'PARTIALLY_APPROVED'
+                  : quote.status === 'PARTIALLY_APPROVED'
                   ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
-                  : estimate.status === 'DECLINED'
+                  : quote.status === 'DECLINED'
                   ? 'bg-red-500/15 text-red-400 border-red-500/30'
                   : 'bg-accent-gold/10 text-accent-gold border-accent-gold/30'
               }`}>
-                Status: {estimate.status.replace('_', ' ')}
+                Status: {quote.status.replace('_', ' ')}
               </span>
             </div>
           </div>
@@ -247,18 +250,18 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
                         <span className="text-warm-white font-medium block print:text-black">{item.description}</span>
                         <div className="flex items-center gap-2 mt-0.5 text-[10px] text-muted font-mono print:text-zinc-600">
                           <span className="uppercase text-accent-gold print:text-zinc-800 font-semibold">{item.type}</span>
-                          {item.source_recommendation && (
-                            <span className="text-muted-dark print:text-zinc-500 truncate max-w-xs">· Ref: {item.source_recommendation}</span>
+                          {item.sourceRecommendation && (
+                            <span className="text-muted-dark print:text-zinc-500 truncate max-w-xs">· Ref: {item.sourceRecommendation}</span>
                           )}
                         </div>
                       </div>
 
                       <div className="col-span-2 text-center text-muted font-mono text-[11px] print:text-zinc-800">
-                        <span>{item.quantity} × ₹{item.unit_price.toLocaleString()}</span>
+                        <span>{item.quantity} × ₹{item.unitPrice.toLocaleString()}</span>
                       </div>
 
                       <div className="col-span-2 text-right font-mono font-bold text-warm-white print:text-black">
-                        ₹{item.line_total.toLocaleString()}
+                        ₹{item.lineTotal.toLocaleString()}
                       </div>
 
                       <div className="col-span-2 flex items-center justify-center gap-1.5">
@@ -320,7 +323,7 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
                         </span>
                       </div>
                       <span className="text-xs font-mono font-bold text-warm-white shrink-0">
-                        ₹{item.line_total.toLocaleString()}
+                        ₹{item.lineTotal.toLocaleString()}
                       </span>
                     </div>
 
@@ -357,27 +360,27 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
             </div>
           </div>
 
-          {/* Financial Calculation Summary (No fake GST) */}
+          {/* Financial Calculation Summary */}
           <div className="pt-4 border-t border-graphite-border space-y-2 print:border-zinc-300 print:text-black print-avoid-break">
             <div className="flex justify-between text-xs text-muted print:text-zinc-800">
               <span>Labour Scope</span>
-              <span className="font-mono">₹{estimate.labour_total.toLocaleString()}</span>
+              <span className="font-mono">₹{quote.labourTotal.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-xs text-muted print:text-zinc-800">
               <span>OEM Parts & Consumables</span>
-              <span className="font-mono">₹{estimate.parts_total.toLocaleString()}</span>
+              <span className="font-mono">₹{quote.partsTotal.toLocaleString()}</span>
             </div>
-            {estimate.discount_total ? (
+            {quote.discountTotal ? (
               <div className="flex justify-between text-xs text-emerald-400 print:text-black">
                 <span>Promotional Courtesy Discount</span>
-                <span className="font-mono">-₹{estimate.discount_total.toLocaleString()}</span>
+                <span className="font-mono">-₹{quote.discountTotal.toLocaleString()}</span>
               </div>
             ) : null}
             <div className="flex justify-between text-sm sm:text-base font-bold text-warm-white pt-2 border-t border-graphite-border print:border-black print:text-black">
               <span>Total Quoted Scope</span>
-              <span className="font-mono text-warm-white text-base sm:text-lg print:text-black">₹{estimate.total.toLocaleString()}</span>
+              <span className="font-mono text-warm-white text-base sm:text-lg print:text-black">₹{quote.total.toLocaleString()}</span>
             </div>
-            {approvedTotalVal > 0 && approvedTotalVal !== estimate.total && (
+            {approvedTotalVal > 0 && approvedTotalVal !== quote.total && (
               <div className="flex justify-between text-sm font-bold text-accent-gold pt-1 print:text-zinc-800">
                 <span>Selected Authorized Value</span>
                 <span className="font-mono text-accent-gold print:text-black">₹{approvedTotalVal.toLocaleString()}</span>
@@ -386,12 +389,12 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
           </div>
 
           {/* Customer-Facing Notes (Internal notes strictly excluded) */}
-          {estimate.customer_notes && (
+          {quote.customerNotes && (
             <div className="p-4 rounded-xs bg-obsidian border border-graphite-border space-y-1 text-xs text-muted font-light leading-relaxed print:bg-transparent print:border-zinc-300 print:text-black print-avoid-break">
               <span className="text-[10px] uppercase tracking-wider text-accent-gold block font-mono font-bold print:text-black">
                 Service Advisor Note
               </span>
-              <p>{estimate.customer_notes}</p>
+              <p>{quote.customerNotes}</p>
             </div>
           )}
 
@@ -402,7 +405,7 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
               <span>Workshop Authorization Policy</span>
             </div>
             <p>
-              {estimate.notes || 'Digital inspection estimate. Any unforeseen findings discovered during teardown will be submitted for secondary approval prior to replacement.'}
+              {quote.policyNotice}
             </p>
           </div>
 
@@ -410,7 +413,7 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
           {!hasActioned ? (
             <div className="pt-4 border-t border-graphite-border flex flex-col items-stretch gap-4 no-print">
               <span className="text-xs text-muted-dark font-light">
-                Confirming authorization schedules genuine parts requisition and technician bay allocation.
+                Confirming authorization reserves required OEM parts and schedules workshop service execution.
               </span>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
@@ -441,25 +444,25 @@ export const QuoteViewerPage: React.FC<QuoteViewerPageProps> = ({ token, onBack 
                   onClick={handleApproveAll}
                   className="w-full sm:flex-1 text-xs font-bold gap-1.5 uppercase tracking-wider min-h-[44px]"
                 >
-                  <CheckCircle2 className="w-4 h-4 mr-1.5" /> Authorize Full Scope (₹{estimate.total.toLocaleString()})
+                  <CheckCircle2 className="w-4 h-4 mr-1.5" /> Authorize Full Scope (₹{quote.total.toLocaleString()})
                 </Button>
               </div>
             </div>
           ) : (
             <div className={`p-4 rounded-xs border text-xs flex items-center gap-2.5 font-light ${
-              estimate.status === 'APPROVED' || estimate.status === 'CONVERTED_TO_WORK'
+              quote.status === 'APPROVED' || quote.status === 'CONVERTED_TO_WORK'
                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                : estimate.status === 'PARTIALLY_APPROVED'
+                : quote.status === 'PARTIALLY_APPROVED'
                 ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
                 : 'bg-red-500/10 border-red-500/30 text-red-400'
             }`}>
               <CheckCircle2 className="w-4 h-4 shrink-0" />
               <span>
                 {actionMessage || (
-                  estimate.status === 'APPROVED' || estimate.status === 'CONVERTED_TO_WORK'
-                    ? 'Authorization recorded. The workshop floor and assigned technician have been scheduled.'
-                    : estimate.status === 'PARTIALLY_APPROVED'
-                    ? `Partial approval recorded for ₹${(estimate.approved_total || approvedTotalVal).toLocaleString()}. Excluded items declined.`
+                  quote.status === 'APPROVED' || quote.status === 'CONVERTED_TO_WORK'
+                    ? 'Authorization recorded. Workshop service has been scheduled.'
+                    : quote.status === 'PARTIALLY_APPROVED'
+                    ? `Partial approval recorded for ₹${(quote.approvedTotal || approvedTotalVal).toLocaleString()}. Excluded items declined.`
                     : 'Estimate declined. A service advisor will contact you to review alternatives.'
                 )}
               </span>
