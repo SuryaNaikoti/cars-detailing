@@ -23,9 +23,9 @@ import {
   ShieldCheck,
   Truck,
   ChevronLeft,
-  X,
   Layers,
 } from 'lucide-react';
+import { MobileFormSheet } from '../../components/ui/MobileFormSheet';
 
 export interface WorkshopFloorViewProps {
   jobs: JobCard[];
@@ -1458,33 +1458,29 @@ export const WorkshopFloorView: React.FC<WorkshopFloorViewProps> = ({
       {/* MODAL 1: ASSIGN VEHICLE TO WORKSHOP BAY                      */}
       {/* ============================================================ */}
       {assignModalOpen && (
-        <div className="fixed inset-0 z-50 bg-obsidian/85 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-graphite border border-accent-gold/40 rounded-xs p-6 max-w-lg w-full space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-accent-gold block font-bold">
-                  BAY ALLOCATION
-                </span>
-                <h3 className="text-base font-bold text-warm-white uppercase">
-                  Assign Vehicle to Workshop Bay
-                </h3>
-              </div>
-              <button
-                onClick={() => setAssignModalOpen(false)}
-                className="text-muted hover:text-warm-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleAssignVehicleSubmit} className="space-y-4 font-mono text-xs">
-              <div className="space-y-1">
-                <label className="text-muted uppercase block text-[10px]">Select Job Card *</label>
+        <MobileFormSheet
+          isOpen={assignModalOpen}
+          onClose={() => setAssignModalOpen(false)}
+          eyebrow="BAY ALLOCATION"
+          title="ASSIGN VEHICLE TO WORKSHOP BAY"
+          primaryActionLabel="Confirm Bay Allocation"
+          onPrimaryAction={() => {
+            const form = document.getElementById('assign-bay-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionDisabled={!selectedAssignJobId}
+          primaryActionVariant="gold"
+          maxWidthClass="sm:max-w-lg"
+        >
+          <form id="assign-bay-form" onSubmit={handleAssignVehicleSubmit} className="space-y-4 font-mono text-xs">
+            <div className="space-y-1">
+              <label className="text-muted uppercase block text-[10px]">Select Job Card *</label>
+              <div className="relative">
                 <select
                   value={selectedAssignJobId}
                   onChange={(e) => setSelectedAssignJobId(e.target.value)}
                   required
-                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[40px]"
+                  className="w-full appearance-none bg-obsidian border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                 >
                   <option value="">-- Choose eligible vehicle job card --</option>
                   {activeJobs.map((j) => (
@@ -1493,16 +1489,23 @@ export const WorkshopFloorView: React.FC<WorkshopFloorViewProps> = ({
                     </option>
                   ))}
                 </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-muted uppercase block text-[10px]">Target Bay *</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-muted uppercase block text-[10px]">Target Bay *</label>
+                <div className="relative">
                   <select
                     value={targetBaySelection}
                     onChange={(e) => setTargetBaySelection(e.target.value)}
                     required
-                    className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[40px]"
+                    className="w-full appearance-none bg-obsidian border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   >
                     {STANDARD_BAYS.map((b) => (
                       <option key={b.bayNumber} value={b.bayNumber}>
@@ -1510,14 +1513,21 @@ export const WorkshopFloorView: React.FC<WorkshopFloorViewProps> = ({
                       </option>
                     ))}
                   </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
+              </div>
 
-                <div className="space-y-1">
-                  <label className="text-muted uppercase block text-[10px]">Technician Lead</label>
+              <div className="space-y-1">
+                <label className="text-muted uppercase block text-[10px]">Technician Lead</label>
+                <div className="relative">
                   <select
                     value={targetTechSelection}
                     onChange={(e) => setTargetTechSelection(e.target.value)}
-                    className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[40px]"
+                    className="w-full appearance-none bg-obsidian border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   >
                     {technicians.map((t) => (
                       <option key={t.id} value={t.name}>
@@ -1525,75 +1535,58 @@ export const WorkshopFloorView: React.FC<WorkshopFloorViewProps> = ({
                       </option>
                     ))}
                   </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <p className="text-muted text-[11px]">
-                This updates the authoritative bay allocation in the central Job Card store and logs an operational timeline event.
-              </p>
-
-              <div className="flex gap-2 pt-3 border-t border-graphite-border">
-                <button
-                  type="button"
-                  onClick={() => setAssignModalOpen(false)}
-                  className="flex-1 py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs uppercase min-h-[44px]"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={!selectedAssignJobId}
-                  className="flex-1 py-2.5 px-3 bg-accent-gold text-obsidian font-bold rounded-xs uppercase hover:bg-white transition-colors disabled:opacity-50 min-h-[44px]"
-                >
-                  Confirm Bay Allocation
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+            <p className="text-muted text-[11px] leading-relaxed">
+              This updates the authoritative bay allocation in the central Job Card store and logs an operational timeline event.
+            </p>
+          </form>
+        </MobileFormSheet>
       )}
 
       {/* ============================================================ */}
       {/* MODAL 2: REASSIGN BAY                                        */}
       {/* ============================================================ */}
       {reassignBayModalOpen && activeDossierJob && (
-        <div className="fixed inset-0 z-50 bg-obsidian/85 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-graphite border border-accent-gold/40 rounded-xs p-6 max-w-md w-full space-y-5 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-accent-gold block font-bold">
-                  BAY TRANSFER
-                </span>
-                <h3 className="text-base font-bold text-warm-white uppercase">
-                  Reassign Bay for {activeDossierJob.id}
-                </h3>
+        <MobileFormSheet
+          isOpen={reassignBayModalOpen}
+          onClose={() => setReassignBayModalOpen(false)}
+          eyebrow="BAY TRANSFER"
+          title={`Reassign Bay · ${activeDossierJob.id}`}
+          primaryActionLabel="Confirm Transfer"
+          onPrimaryAction={() => {
+            const form = document.getElementById('reassign-bay-floor-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionVariant="gold"
+          maxWidthClass="sm:max-w-md"
+        >
+          <form id="reassign-bay-floor-form" onSubmit={handleReassignBaySubmit} className="space-y-4 font-mono text-xs">
+            <div className="p-3 rounded-xs bg-obsidian border border-graphite-border space-y-1">
+              <div className="flex justify-between text-muted text-[11px]">
+                <span>Vehicle:</span>
+                <span className="text-warm-white font-bold">{activeDossierJob.vehicle_summary}</span>
               </div>
-              <button
-                onClick={() => setReassignBayModalOpen(false)}
-                className="text-muted hover:text-warm-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex justify-between text-muted text-[11px]">
+                <span>Current Bay:</span>
+                <span className="text-accent-gold font-bold">{activeDossierJob.bay}</span>
+              </div>
             </div>
 
-            <form onSubmit={handleReassignBaySubmit} className="space-y-4 font-mono text-xs">
-              <div className="p-3 rounded-xs bg-obsidian border border-graphite-border space-y-1">
-                <div className="flex justify-between text-muted text-[11px]">
-                  <span>Vehicle:</span>
-                  <span className="text-warm-white font-bold">{activeDossierJob.vehicle_summary}</span>
-                </div>
-                <div className="flex justify-between text-muted text-[11px]">
-                  <span>Current Bay:</span>
-                  <span className="text-accent-gold font-bold">{activeDossierJob.bay}</span>
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-muted uppercase block text-[10px]">Select New Bay *</label>
+            <div className="space-y-1">
+              <label className="text-muted uppercase block text-[10px]">Select New Bay *</label>
+              <div className="relative">
                 <select
                   value={targetBaySelection}
                   onChange={(e) => setTargetBaySelection(e.target.value)}
-                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white min-h-[40px]"
+                  className="w-full appearance-none bg-obsidian border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white min-h-[46px]"
                 >
                   {STANDARD_BAYS.map((b) => (
                     <option key={b.bayNumber} value={b.bayNumber}>
@@ -1601,119 +1594,85 @@ export const WorkshopFloorView: React.FC<WorkshopFloorViewProps> = ({
                     </option>
                   ))}
                 </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
+            </div>
 
-              <div className="space-y-1">
-                <label className="text-muted uppercase block text-[10px]">Reason for Transfer</label>
-                <input
-                  type="text"
-                  value={reassignReason}
-                  onChange={(e) => setReassignReason(e.target.value)}
-                  placeholder="e.g. Cleared for suspension lift, moved to alignment rack"
-                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white min-h-[40px]"
-                />
-              </div>
-
-              <div className="flex gap-2 pt-3 border-t border-graphite-border">
-                <button
-                  type="button"
-                  onClick={() => setReassignBayModalOpen(false)}
-                  className="flex-1 py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs uppercase min-h-[44px]"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-2.5 px-3 bg-accent-gold text-obsidian font-bold rounded-xs uppercase hover:bg-white min-h-[44px]"
-                >
-                  Confirm Transfer
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+            <div className="space-y-1">
+              <label className="text-muted uppercase block text-[10px]">Reason for Transfer</label>
+              <input
+                type="text"
+                value={reassignReason}
+                onChange={(e) => setReassignReason(e.target.value)}
+                placeholder="e.g. Cleared for suspension lift, moved to alignment rack"
+                className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white min-h-[46px]"
+              />
+            </div>
+          </form>
+        </MobileFormSheet>
       )}
 
       {/* ============================================================ */}
       {/* MODAL 3: REASSIGN TECHNICIAN                                 */}
       {/* ============================================================ */}
       {reassignTechModalOpen && activeDossierJob && (
-        <div className="fixed inset-0 z-50 bg-obsidian/85 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-graphite border border-accent-gold/40 rounded-xs p-6 max-w-md w-full space-y-5 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-accent-gold block font-bold">
-                  TECHNICIAN REALLOCATION
-                </span>
-                <h3 className="text-base font-bold text-warm-white uppercase">
-                  Assign Lead Tech for {activeDossierJob.id}
-                </h3>
+        <MobileFormSheet
+          isOpen={reassignTechModalOpen}
+          onClose={() => setReassignTechModalOpen(false)}
+          eyebrow="TECHNICIAN REALLOCATION"
+          title={`Assign Lead Tech · ${activeDossierJob.id}`}
+          primaryActionLabel="Save Assignment"
+          onPrimaryAction={() => {
+            const form = document.getElementById('reassign-tech-floor-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionVariant="gold"
+          maxWidthClass="sm:max-w-md"
+        >
+          <form id="reassign-tech-floor-form" onSubmit={handleReassignTechSubmit} className="space-y-4 font-mono text-xs">
+            <div className="p-3 rounded-xs bg-obsidian border border-graphite-border space-y-1">
+              <div className="flex justify-between text-muted text-[11px]">
+                <span>Vehicle:</span>
+                <span className="text-warm-white font-bold">{activeDossierJob.vehicle_summary}</span>
               </div>
-              <button
-                onClick={() => setReassignTechModalOpen(false)}
-                className="text-muted hover:text-warm-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex justify-between text-muted text-[11px]">
+                <span>Current Lead Tech:</span>
+                <span className="text-warm-white font-bold">{activeDossierJob.technician || 'Unassigned'}</span>
+              </div>
             </div>
 
-            <form onSubmit={handleReassignTechSubmit} className="space-y-4 font-mono text-xs">
-              <div className="p-3 rounded-xs bg-obsidian border border-graphite-border space-y-1">
-                <div className="flex justify-between text-muted text-[11px]">
-                  <span>Vehicle:</span>
-                  <span className="text-warm-white font-bold">{activeDossierJob.vehicle_summary}</span>
-                </div>
-                <div className="flex justify-between text-muted text-[11px]">
-                  <span>Current Lead Tech:</span>
-                  <span className="text-warm-white font-bold">{activeDossierJob.technician || 'Unassigned'}</span>
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-muted uppercase block text-[10px]">Available Technicians *</label>
-                <div className="space-y-1.5 max-h-48 overflow-y-auto">
-                  {technicians.map((t) => {
-                    const isSelected = targetTechSelection === t.name;
-                    return (
-                      <div
-                        key={t.id}
-                        data-testid={`tech-select-option-${t.id}`}
-                        onClick={() => setTargetTechSelection(t.name)}
-                        className={`p-2.5 rounded-xs border cursor-pointer transition-all flex items-center justify-between ${
-                          isSelected
-                            ? 'bg-accent-gold/15 border-accent-gold text-accent-gold font-bold'
-                            : 'bg-obsidian border-graphite-border text-muted hover:text-warm-white'
-                        }`}
-                      >
-                        <div>
-                          <span className="block font-medium">{t.name}</span>
-                          <span className="text-[10px] text-muted-dark block">{t.specialization}</span>
-                        </div>
-                        <span className="text-[10px] font-mono">{t.status}</span>
+            <div className="space-y-1">
+              <label className="text-muted uppercase block text-[10px]">Available Technicians *</label>
+              <div className="space-y-2 max-h-56 overflow-y-auto">
+                {technicians.map((t) => {
+                  const isSelected = targetTechSelection === t.name;
+                  return (
+                    <div
+                      key={t.id}
+                      data-testid={`tech-select-option-${t.id}`}
+                      onClick={() => setTargetTechSelection(t.name)}
+                      className={`p-3 rounded-xs border cursor-pointer transition-all flex items-center justify-between min-h-[46px] ${
+                        isSelected
+                          ? 'bg-accent-gold/15 border-accent-gold text-accent-gold font-bold'
+                          : 'bg-obsidian border-graphite-border text-muted hover:text-warm-white'
+                      }`}
+                    >
+                      <div>
+                        <span className="block font-medium">{t.name}</span>
+                        <span className="text-[10px] text-muted-dark block">{t.specialization}</span>
                       </div>
-                    );
-                  })}
-                </div>
+                      <span className="text-[10px] font-mono">{t.status}</span>
+                    </div>
+                  );
+                })}
               </div>
-
-              <div className="flex gap-2 pt-3 border-t border-graphite-border">
-                <button
-                  type="button"
-                  onClick={() => setReassignTechModalOpen(false)}
-                  className="flex-1 py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs uppercase min-h-[44px]"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-2.5 px-3 bg-accent-gold text-obsidian font-bold rounded-xs uppercase hover:bg-white min-h-[44px]"
-                >
-                  Save Assignment
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+            </div>
+          </form>
+        </MobileFormSheet>
       )}
     </div>
   );

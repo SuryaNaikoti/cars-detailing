@@ -23,6 +23,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { resetDemoData } from '../../lib/demoStore';
+import { MobileFormSheet } from '../../components/ui/MobileFormSheet';
 
 export interface SettingsViewProps {
   workshopProfile: WorkshopProfileConfig;
@@ -728,58 +729,55 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       )}
 
       {/* 9. RESET DEMO DATA CONFIRMATION MODAL */}
-      {resetModalOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="reset-modal-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian/85 backdrop-blur-xs"
-          onKeyDown={(e) => {
-            if (e.key === 'Escape') setResetModalOpen(false);
-          }}
-        >
-          <div className="max-w-md w-full p-6 rounded-xs bg-graphite border border-red-500/40 space-y-4 shadow-2xl font-mono text-xs animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center gap-2.5 text-red-400 pb-2 border-b border-graphite-border">
-              <AlertTriangle className="w-5 h-5 shrink-0" />
-              <h3 id="reset-modal-title" className="text-sm font-bold uppercase tracking-wider text-warm-white">
-                CONFIRM DEMO DATA RESET
-              </h3>
-            </div>
+      <MobileFormSheet
+        isOpen={resetModalOpen}
+        onClose={() => setResetModalOpen(false)}
+        title="Confirm Demo Data Reset"
+        eyebrow="SYSTEM MAINTENANCE"
+        maxWidth="max-w-md"
+        footer={
+          <div className="flex flex-col sm:flex-row gap-2 w-full font-mono text-xs">
+            <button
+              type="button"
+              onClick={() => setResetModalOpen(false)}
+              className="flex-1 min-h-[44px] py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs uppercase font-bold"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              id="btn-confirm-reset-demo"
+              onClick={handleConfirmReset}
+              className="flex-1 min-h-[44px] py-2.5 px-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xs uppercase transition-colors flex items-center justify-center gap-1.5"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Restore Seed Data</span>
+            </button>
+          </div>
+        }
+      >
+        <div className="space-y-4 font-mono text-xs">
+          <div className="flex items-center gap-2.5 text-red-400 pb-2 border-b border-graphite-border">
+            <AlertTriangle className="w-5 h-5 shrink-0" />
+            <span className="text-xs font-bold uppercase tracking-wider text-warm-white">
+              Data Reset Confirmation
+            </span>
+          </div>
 
-            <p className="text-muted leading-relaxed">
-              This operation will restore all demo operational stores (Customers, Vehicles, Leads, Appointments, Job Cards, Inspections, Estimates, Technicians, Reminders, and Workshop Profile) back to their canonical seed state.
-            </p>
+          <p className="text-muted leading-relaxed text-xs">
+            This operation will restore all demo operational stores (Customers, Vehicles, Leads, Appointments, Job Cards, Inspections, Estimates, Technicians, Reminders, and Workshop Profile) back to their canonical seed state.
+          </p>
 
-            <div className="p-3 rounded-xs bg-obsidian/80 border border-graphite-border text-[11px] text-muted space-y-1">
-              <span className="font-bold text-accent-gold block">OPERATIONAL SAFETY VERIFIED:</span>
-              <span>• Source code files remain intact.</span>
-              <br />
-              <span>• Configuration and database migrations are untouched.</span>
-              <br />
-              <span>• Only local browser demo state is re-initialized.</span>
-            </div>
-
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-graphite-border">
-              <button
-                type="button"
-                onClick={() => setResetModalOpen(false)}
-                className="px-4 py-2 rounded-xs border border-graphite-border hover:border-warm-white text-muted hover:text-warm-white transition-colors min-h-[44px]"
-              >
-                CANCEL
-              </button>
-              <button
-                type="button"
-                id="btn-confirm-reset-demo"
-                onClick={handleConfirmReset}
-                className="px-4 py-2 rounded-xs bg-red-600 hover:bg-red-500 text-white font-bold transition-colors min-h-[44px] flex items-center gap-1.5"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>CONFIRM & RESTORE SEED DATA</span>
-              </button>
-            </div>
+          <div className="p-3 rounded-xs bg-obsidian border border-graphite-border text-xs text-muted space-y-1">
+            <span className="font-bold text-accent-gold block text-[11px]">OPERATIONAL SAFETY VERIFIED:</span>
+            <span>• Source code files remain intact.</span>
+            <br />
+            <span>• Configuration and database migrations are untouched.</span>
+            <br />
+            <span>• Only local browser demo state is re-initialized.</span>
           </div>
         </div>
-      )}
+      </MobileFormSheet>
 
     </div>
   );

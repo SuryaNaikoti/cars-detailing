@@ -6,7 +6,6 @@ import {
   Plus,
   Car,
   FileCheck2,
-  X,
   Search,
   Phone,
   MessageSquare,
@@ -20,6 +19,7 @@ import {
   Fuel,
   UserCheck,
 } from 'lucide-react';
+import { MobileFormSheet } from '../../components/ui/MobileFormSheet';
 
 export interface AppointmentsViewProps {
   appointments: AppointmentRecord[];
@@ -1773,124 +1773,138 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
       </div>
 
       {/* ============================================================ */}
-      {/* MODAL 1: NEW APPOINTMENT */}
+      {/* MODAL 1: NEW APPOINTMENT (Mobile-First Architecture) */}
       {/* ============================================================ */}
-      {newModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 overflow-y-auto">
-          <form
-            onSubmit={handleCreateAppointmentSubmit}
-            className="bg-obsidian border border-graphite-border p-6 rounded-xs max-w-lg w-full space-y-4 my-8 shadow-2xl"
-          >
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
+      <MobileFormSheet
+        isOpen={newModalOpen}
+        onClose={() => setNewModalOpen(false)}
+        title="New Appointment"
+        eyebrow="Rapid Reception Intake"
+        primaryActionLabel="Create Appointment"
+        onPrimaryAction={() => {
+          const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+          handleCreateAppointmentSubmit(fakeEvent);
+        }}
+        cancelActionLabel="Cancel"
+        onCancel={() => setNewModalOpen(false)}
+        maxWidthClass="sm:max-w-xl"
+      >
+        <form onSubmit={handleCreateAppointmentSubmit} id="new-appointment-form" className="space-y-6 text-xs">
+          {/* SECTION 1: CUSTOMER */}
+          <div className="space-y-3 pb-5 border-b border-graphite-border/70">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-accent-gold font-bold block">
+              01 · Customer Profile
+            </span>
+            <div className="space-y-3">
               <div>
-                <span className="text-[10px] font-mono tracking-widest uppercase text-accent-gold block">
-                  RAPID INTAKE
-                </span>
-                <h4 className="text-sm font-bold uppercase text-warm-white">
-                  + NEW WORKSHOP APPOINTMENT
-                </h4>
+                <label className="text-[11px] font-mono text-muted uppercase block mb-1">
+                  Customer Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formName}
+                  onChange={(e) => setFormName(e.target.value)}
+                  placeholder="e.g. Rahul Mehta"
+                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3.5 py-3 text-sm text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                />
               </div>
-              <button
-                type="button"
-                onClick={() => setNewModalOpen(false)}
-                className="text-muted hover:text-warm-white p-1"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            <div className="space-y-3 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-mono text-muted uppercase block mb-1">
-                    Customer Name *
+                  <label className="text-[11px] font-mono text-muted uppercase block mb-1">
+                    Phone Number *
                   </label>
                   <input
-                    type="text"
-                    required
-                    value={formName}
-                    onChange={(e) => setFormName(e.target.value)}
-                    placeholder="e.g. Rahul Mehta"
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[10px] font-mono text-muted uppercase block mb-1">
-                    Customer Phone *
-                  </label>
-                  <input
-                    type="text"
+                    type="tel"
                     required
                     value={formPhone}
                     onChange={(e) => setFormPhone(e.target.value)}
                     placeholder="+91 98765 43210"
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3.5 py-3 text-sm text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-mono text-muted uppercase block mb-1">
+                    Email Address (Optional)
+                  </label>
+                  <input
+                    type="email"
+                    value={formEmail}
+                    onChange={(e) => setFormEmail(e.target.value)}
+                    placeholder="customer@domain.com"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3.5 py-3 text-sm text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
               </div>
+            </div>
+          </div>
 
-              <div>
-                <label className="text-[10px] font-mono text-muted uppercase block mb-1">
-                  Email Address (Optional)
-                </label>
-                <input
-                  type="email"
-                  value={formEmail}
-                  onChange={(e) => setFormEmail(e.target.value)}
-                  placeholder="customer@domain.com"
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          {/* SECTION 2: VEHICLE */}
+          <div className="space-y-3 pb-5 border-b border-graphite-border/70">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-accent-gold font-bold block">
+              02 · Vehicle Details
+            </span>
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-mono text-muted uppercase block mb-1">
-                    Make
+                  <label className="text-[11px] font-mono text-muted uppercase block mb-1">
+                    Marque / Make
                   </label>
                   <input
                     type="text"
                     value={formMake}
                     onChange={(e) => setFormMake(e.target.value)}
                     placeholder="e.g. BMW"
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3.5 py-3 text-sm text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
+
                 <div>
-                  <label className="text-[10px] font-mono text-muted uppercase block mb-1">
-                    Model
+                  <label className="text-[11px] font-mono text-muted uppercase block mb-1">
+                    Series / Model
                   </label>
                   <input
                     type="text"
                     value={formModel}
                     onChange={(e) => setFormModel(e.target.value)}
-                    placeholder="5 Series (G30)"
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] font-mono text-muted uppercase block mb-1">
-                    Registration
-                  </label>
-                  <input
-                    type="text"
-                    value={formReg}
-                    onChange={(e) => setFormReg(e.target.value)}
-                    placeholder="MH 02 AB 1234"
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold uppercase font-mono min-h-[44px]"
+                    placeholder="e.g. 5 Series (G30)"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3.5 py-3 text-sm text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[10px] font-mono text-muted uppercase block mb-1">
-                    Requested Service *
-                  </label>
+              <div>
+                <label className="text-[11px] font-mono text-muted uppercase block mb-1">
+                  Registration Number
+                </label>
+                <input
+                  type="text"
+                  value={formReg}
+                  onChange={(e) => setFormReg(e.target.value)}
+                  placeholder="e.g. MH 02 AB 1234"
+                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3.5 py-3 text-sm text-warm-white focus:outline-none focus:border-accent-gold uppercase font-mono tracking-wider min-h-[46px]"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 3: SERVICE DISCIPLINE & INTAKE */}
+          <div className="space-y-3 pb-5 border-b border-graphite-border/70">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-accent-gold font-bold block">
+              03 · Service & Channel
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-[11px] font-mono text-muted uppercase block mb-1">
+                  Requested Service *
+                </label>
+                <div className="relative">
                   <select
                     value={formService}
                     onChange={(e) => setFormService(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs pl-3.5 pr-10 py-3 text-sm text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px] appearance-none cursor-pointer"
                   >
                     {SERVICES.map((s) => (
                       <option key={s} value={s}>
@@ -1898,16 +1912,23 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                       </option>
                     ))}
                   </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-accent-gold">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
+              </div>
 
-                <div>
-                  <label className="text-[10px] font-mono text-muted uppercase block mb-1">
-                    Source Channel
-                  </label>
+              <div>
+                <label className="text-[11px] font-mono text-muted uppercase block mb-1">
+                  Source Channel
+                </label>
+                <div className="relative">
                   <select
                     value={formSource}
                     onChange={(e) => setFormSource(e.target.value as any)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs pl-3.5 pr-10 py-3 text-sm text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px] appearance-none cursor-pointer"
                   >
                     {SOURCES.map((sc) => (
                       <option key={sc} value={sc}>
@@ -1915,42 +1936,57 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                       </option>
                     ))}
                   </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-accent-gold">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
               </div>
+            </div>
+          </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <div>
-                  <label className="text-[10px] font-mono text-muted uppercase block mb-1">
-                    Date *
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={formDate}
-                    onChange={(e) => setFormDate(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] font-mono text-muted uppercase block mb-1">
-                    Time *
-                  </label>
-                  <input
-                    type="time"
-                    required
-                    value={formTime}
-                    onChange={(e) => setFormTime(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] font-mono text-muted uppercase block mb-1">
-                    Advisor
-                  </label>
+          {/* SECTION 4: SCHEDULING */}
+          <div className="space-y-3 pb-5 border-b border-graphite-border/70">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-accent-gold font-bold block">
+              04 · Timing & Advisor
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="text-[11px] font-mono text-muted uppercase block mb-1">
+                  Date *
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={formDate}
+                  onChange={(e) => setFormDate(e.target.value)}
+                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3.5 py-3 text-sm text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-mono text-muted uppercase block mb-1">
+                  Time *
+                </label>
+                <input
+                  type="time"
+                  required
+                  value={formTime}
+                  onChange={(e) => setFormTime(e.target.value)}
+                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3.5 py-3 text-sm text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-mono text-muted uppercase block mb-1">
+                  Assigned Advisor
+                </label>
+                <div className="relative">
                   <select
                     value={formAdvisor}
                     onChange={(e) => setFormAdvisor(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-2.5 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs pl-3.5 pr-10 py-3 text-sm text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px] appearance-none cursor-pointer"
                   >
                     {ADVISORS.map((a) => (
                       <option key={a} value={a}>
@@ -1958,97 +1994,87 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                       </option>
                     ))}
                   </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-accent-gold">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
-              </div>
-
-              <div>
-                <label className="text-[10px] font-mono text-muted uppercase block mb-1">
-                  Initial Appointment State
-                </label>
-                <div className="flex items-center gap-3">
-                  <label className="flex items-center gap-1.5 cursor-pointer text-warm-white">
-                    <input
-                      type="radio"
-                      name="initialStatus"
-                      checked={formInitialStatus === 'CONFIRMED'}
-                      onChange={() => setFormInitialStatus('CONFIRMED')}
-                      className="accent-accent-gold"
-                    />
-                    <span>CONFIRMED (Accepted Slot)</span>
-                  </label>
-                  <label className="flex items-center gap-1.5 cursor-pointer text-warm-white">
-                    <input
-                      type="radio"
-                      name="initialStatus"
-                      checked={formInitialStatus === 'REQUESTED'}
-                      onChange={() => setFormInitialStatus('REQUESTED')}
-                      className="accent-accent-gold"
-                    />
-                    <span>REQUESTED (Pending Advisor Review)</span>
-                  </label>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-[10px] font-mono text-muted uppercase block mb-1">
-                  Customer Issue / Intake Notes
-                </label>
-                <textarea
-                  rows={2}
-                  value={formNotes}
-                  onChange={(e) => setFormNotes(e.target.value)}
-                  placeholder="e.g. Due for 40,000 km oil service + front brake warning inspection"
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold"
-                />
               </div>
             </div>
 
-            <div className="pt-3 border-t border-graphite-border flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setNewModalOpen(false)}
-                className="px-4 py-2 bg-graphite text-muted hover:text-warm-white rounded-xs text-xs uppercase min-h-[44px]"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-5 py-2 bg-accent-gold text-obsidian font-bold rounded-xs text-xs uppercase hover:bg-white transition-colors min-h-[44px]"
-              >
-                Create Appointment
-              </button>
+            {/* INITIAL STATUS CHIPS */}
+            <div className="pt-2">
+              <label className="text-[11px] font-mono text-muted uppercase block mb-2">
+                Initial State
+              </label>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormInitialStatus('CONFIRMED')}
+                  className={`px-4 py-2.5 rounded-xs border text-xs font-bold uppercase transition-all flex items-center gap-2 min-h-[44px] ${
+                    formInitialStatus === 'CONFIRMED'
+                      ? 'bg-emerald-500/15 border-emerald-500 text-emerald-400'
+                      : 'bg-graphite border-graphite-border text-muted'
+                  }`}
+                >
+                  <span className={`w-2.5 h-2.5 rounded-full ${formInitialStatus === 'CONFIRMED' ? 'bg-emerald-400' : 'bg-zinc-600'}`} />
+                  <span>CONFIRMED (Accepted Slot)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormInitialStatus('REQUESTED')}
+                  className={`px-4 py-2.5 rounded-xs border text-xs font-bold uppercase transition-all flex items-center gap-2 min-h-[44px] ${
+                    formInitialStatus === 'REQUESTED'
+                      ? 'bg-accent-gold/15 border-accent-gold text-accent-gold'
+                      : 'bg-graphite border-graphite-border text-muted'
+                  }`}
+                >
+                  <span className={`w-2.5 h-2.5 rounded-full ${formInitialStatus === 'REQUESTED' ? 'bg-accent-gold' : 'bg-zinc-600'}`} />
+                  <span>REQUESTED (Pending Advisor)</span>
+                </button>
+              </div>
             </div>
-          </form>
-        </div>
-      )}
+          </div>
+
+          {/* SECTION 5: INTAKE SYMPTOMS */}
+          <div className="space-y-2">
+            <label className="text-[11px] font-mono text-muted uppercase block">
+              Customer Symptoms & Intake Notes (Optional)
+            </label>
+            <textarea
+              rows={3}
+              value={formNotes}
+              onChange={(e) => setFormNotes(e.target.value)}
+              placeholder="e.g. Due for 40,000 km oil service + front brake warning inspection"
+              className="w-full bg-graphite border border-graphite-border rounded-xs p-3 text-sm text-warm-white placeholder:text-muted-dark focus:outline-none focus:border-accent-gold resize-y min-h-[80px]"
+            />
+          </div>
+        </form>
+      </MobileFormSheet>
 
       {/* ============================================================ */}
       {/* MODAL 2: CONFIRM APPOINTMENT */}
       {/* ============================================================ */}
       {confirmModalOpen && selectedAppt && (
-        <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4">
+        <MobileFormSheet
+          isOpen={confirmModalOpen}
+          onClose={() => setConfirmModalOpen(false)}
+          eyebrow="ADVISOR ACTION"
+          title={`CONFIRM APPOINTMENT ${selectedAppt.id}`}
+          primaryActionLabel="Confirm Appointment"
+          onPrimaryAction={() => {
+            const form = document.getElementById('confirm-appt-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionVariant="gold"
+          maxWidthClass="sm:max-w-md"
+        >
           <form
+            id="confirm-appt-form"
             onSubmit={handleConfirmSubmit}
-            className="bg-obsidian border border-graphite-border p-6 rounded-xs max-w-md w-full space-y-4 shadow-2xl"
+            className="space-y-4"
           >
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono tracking-widest uppercase text-accent-gold block">
-                  ADVISOR ACTION
-                </span>
-                <h4 className="text-sm font-bold uppercase text-warm-white">
-                  CONFIRM APPOINTMENT {selectedAppt.id}
-                </h4>
-              </div>
-              <button
-                type="button"
-                onClick={() => setConfirmModalOpen(false)}
-                className="text-muted hover:text-warm-white p-1"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
             <div className="p-3 bg-graphite/40 border border-graphite-border rounded-xs text-xs space-y-1">
               <div className="font-bold text-warm-white">{selectedAppt.customer_name}</div>
               <div className="text-muted font-mono">{selectedAppt.customer_phone}</div>
@@ -2057,7 +2083,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] font-mono text-muted uppercase block mb-1">
                     Confirmed Date *
@@ -2067,7 +2093,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                     required
                     value={confirmDate}
                     onChange={(e) => setConfirmDate(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
                 <div>
@@ -2079,7 +2105,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                     required
                     value={confirmTime}
                     onChange={(e) => setConfirmTime(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
               </div>
@@ -2088,17 +2114,24 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                 <label className="text-[10px] font-mono text-muted uppercase block mb-1">
                   Assigned Advisor
                 </label>
-                <select
-                  value={confirmAdvisor}
-                  onChange={(e) => setConfirmAdvisor(e.target.value)}
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                >
-                  {ADVISORS.map((a) => (
-                    <option key={a} value={a}>
-                      {a}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={confirmAdvisor}
+                    onChange={(e) => setConfirmAdvisor(e.target.value)}
+                    className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                  >
+                    {ADVISORS.map((a) => (
+                      <option key={a} value={a}>
+                        {a}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -2114,53 +2147,32 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                 />
               </div>
             </div>
-
-            <div className="pt-3 border-t border-graphite-border flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setConfirmModalOpen(false)}
-                className="px-4 py-2 bg-graphite text-muted hover:text-warm-white rounded-xs text-xs uppercase min-h-[44px]"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-5 py-2 bg-sky-500 text-obsidian font-bold rounded-xs text-xs uppercase hover:bg-white transition-colors min-h-[44px]"
-              >
-                Confirm Appointment
-              </button>
-            </div>
           </form>
-        </div>
+        </MobileFormSheet>
       )}
 
       {/* ============================================================ */}
       {/* MODAL 3: RESCHEDULE APPOINTMENT */}
       {/* ============================================================ */}
       {rescheduleModalOpen && selectedAppt && (
-        <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4">
+        <MobileFormSheet
+          isOpen={rescheduleModalOpen}
+          onClose={() => setRescheduleModalOpen(false)}
+          eyebrow="SCHEDULE MODIFICATION"
+          title="RESCHEDULE APPOINTMENT"
+          primaryActionLabel="Save New Time"
+          onPrimaryAction={() => {
+            const form = document.getElementById('reschedule-appt-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionVariant="gold"
+          maxWidthClass="sm:max-w-md"
+        >
           <form
+            id="reschedule-appt-form"
             onSubmit={handleRescheduleSubmit}
-            className="bg-obsidian border border-graphite-border p-6 rounded-xs max-w-md w-full space-y-4 shadow-2xl"
+            className="space-y-4"
           >
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono tracking-widest uppercase text-accent-gold block">
-                  SCHEDULE MODIFICATION
-                </span>
-                <h4 className="text-sm font-bold uppercase text-warm-white">
-                  RESCHEDULE APPOINTMENT
-                </h4>
-              </div>
-              <button
-                type="button"
-                onClick={() => setRescheduleModalOpen(false)}
-                className="text-muted hover:text-warm-white p-1"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
             <div className="p-3 bg-graphite/40 border border-graphite-border rounded-xs text-xs space-y-1">
               <span className="text-[9px] font-mono uppercase text-muted-dark block">CURRENT SCHEDULE</span>
               <div className="font-mono text-warm-white font-bold">
@@ -2170,7 +2182,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] font-mono text-muted uppercase block mb-1">
                     New Date *
@@ -2180,7 +2192,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                     required
                     value={rescheduleDate}
                     onChange={(e) => setRescheduleDate(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
                 <div>
@@ -2192,7 +2204,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                     required
                     value={rescheduleTime}
                     onChange={(e) => setRescheduleTime(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
               </div>
@@ -2201,17 +2213,24 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                 <label className="text-[10px] font-mono text-muted uppercase block mb-1">
                   Advisor
                 </label>
-                <select
-                  value={rescheduleAdvisor}
-                  onChange={(e) => setRescheduleAdvisor(e.target.value)}
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                >
-                  {ADVISORS.map((a) => (
-                    <option key={a} value={a}>
-                      {a}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={rescheduleAdvisor}
+                    onChange={(e) => setRescheduleAdvisor(e.target.value)}
+                    className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                  >
+                    {ADVISORS.map((a) => (
+                      <option key={a} value={a}>
+                        {a}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -2223,57 +2242,36 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                   value={rescheduleReason}
                   onChange={(e) => setRescheduleReason(e.target.value)}
                   placeholder="e.g. Customer requested afternoon slot instead"
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                 />
               </div>
             </div>
-
-            <div className="pt-3 border-t border-graphite-border flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setRescheduleModalOpen(false)}
-                className="px-4 py-2 bg-graphite text-muted hover:text-warm-white rounded-xs text-xs uppercase min-h-[44px]"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-5 py-2 bg-accent-gold text-obsidian font-bold rounded-xs text-xs uppercase hover:bg-white transition-colors min-h-[44px]"
-              >
-                Save New Time
-              </button>
-            </div>
           </form>
-        </div>
+        </MobileFormSheet>
       )}
 
       {/* ============================================================ */}
       {/* MODAL 4: VEHICLE CHECK-IN (Intake Handoff) */}
       {/* ============================================================ */}
       {checkInModalOpen && selectedAppt && (
-        <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 overflow-y-auto">
+        <MobileFormSheet
+          isOpen={checkInModalOpen}
+          onClose={() => setCheckInModalOpen(false)}
+          eyebrow="PHYSICAL VEHICLE INTAKE"
+          title="START VEHICLE CHECK-IN"
+          primaryActionLabel="Complete Intake Check-In"
+          onPrimaryAction={() => {
+            const form = document.getElementById('check-in-appt-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionVariant="gold"
+          maxWidthClass="sm:max-w-md"
+        >
           <form
+            id="check-in-appt-form"
             onSubmit={handleCheckInSubmit}
-            className="bg-obsidian border border-accent-gold/40 p-6 rounded-xs max-w-md w-full space-y-4 my-8 shadow-2xl"
+            className="space-y-4"
           >
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono tracking-widest uppercase text-accent-gold block">
-                  PHYSICAL VEHICLE INTAKE
-                </span>
-                <h4 className="text-sm font-bold uppercase text-warm-white">
-                  START VEHICLE CHECK-IN
-                </h4>
-              </div>
-              <button
-                type="button"
-                onClick={() => setCheckInModalOpen(false)}
-                className="text-muted hover:text-warm-white p-1"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
             <div className="p-3 bg-graphite/40 border border-graphite-border rounded-xs text-xs space-y-1">
               <div className="font-bold text-warm-white">{selectedAppt.customer_name}</div>
               <div className="text-accent-gold font-medium">{selectedAppt.vehicle_summary}</div>
@@ -2291,11 +2289,11 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                   value={checkInReg}
                   onChange={(e) => setCheckInReg(e.target.value)}
                   placeholder="e.g. MH 02 ER 4500"
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono uppercase text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono uppercase text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] font-mono text-muted uppercase block mb-1">
                     Current Odometer (km) *
@@ -2306,24 +2304,31 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                     value={checkInOdo}
                     onChange={(e) => setCheckInOdo(e.target.value ? Number(e.target.value) : '')}
                     placeholder="34250"
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
                 <div>
                   <label className="text-[10px] font-mono text-muted uppercase block mb-1">
                     Fuel Level *
                   </label>
-                  <select
-                    value={checkInFuel}
-                    onChange={(e) => setCheckInFuel(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  >
-                    <option value="15%">15% (Reserve)</option>
-                    <option value="25%">25% (1/4)</option>
-                    <option value="50%">50% (1/2)</option>
-                    <option value="75%">75% (3/4)</option>
-                    <option value="100%">100% (Full)</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={checkInFuel}
+                      onChange={(e) => setCheckInFuel(e.target.value)}
+                      className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                    >
+                      <option value="15%">15% (Reserve)</option>
+                      <option value="25%">25% (1/4)</option>
+                      <option value="50%">50% (1/2)</option>
+                      <option value="75%">75% (3/4)</option>
+                      <option value="100%">100% (Full)</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -2336,7 +2341,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                   value={checkInIssue}
                   onChange={(e) => setCheckInIssue(e.target.value)}
                   placeholder="Confirm exact symptom customer describes on arrival..."
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                 />
               </div>
 
@@ -2353,54 +2358,33 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                 />
               </div>
             </div>
-
-            <div className="pt-3 border-t border-graphite-border flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setCheckInModalOpen(false)}
-                className="px-4 py-2 bg-graphite text-muted hover:text-warm-white rounded-xs text-xs uppercase min-h-[44px]"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-5 py-2 bg-accent-gold text-obsidian font-bold rounded-xs text-xs uppercase hover:bg-white transition-colors min-h-[44px]"
-              >
-                Complete Intake Check-In
-              </button>
-            </div>
           </form>
-        </div>
+        </MobileFormSheet>
       )}
 
       {/* ============================================================ */}
       {/* MODAL 5: CANCEL APPOINTMENT */}
       {/* ============================================================ */}
       {cancelModalOpen && selectedAppt && (
-        <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4">
+        <MobileFormSheet
+          isOpen={cancelModalOpen}
+          onClose={() => setCancelModalOpen(false)}
+          eyebrow="CANCELLATION CONFIRMATION"
+          title={`CANCEL APPOINTMENT ${selectedAppt.id}`}
+          primaryActionLabel="Confirm Cancellation"
+          onPrimaryAction={() => {
+            const form = document.getElementById('cancel-appt-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionVariant="danger"
+          maxWidthClass="sm:max-w-md"
+        >
           <form
+            id="cancel-appt-form"
             onSubmit={handleCancelSubmit}
-            className="bg-obsidian border border-red-500/30 p-6 rounded-xs max-w-md w-full space-y-4 shadow-2xl"
+            className="space-y-4"
           >
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono tracking-widest uppercase text-red-400 block">
-                  CANCELLATION CONFIRMATION
-                </span>
-                <h4 className="text-sm font-bold uppercase text-warm-white">
-                  CANCEL APPOINTMENT {selectedAppt.id}
-                </h4>
-              </div>
-              <button
-                type="button"
-                onClick={() => setCancelModalOpen(false)}
-                className="text-muted hover:text-warm-white p-1"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <p className="text-xs text-muted">
+            <p className="text-xs text-muted leading-relaxed">
               Historical appointments remain logged in the audit trail. Please state the operational reason:
             </p>
 
@@ -2409,17 +2393,24 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                 <label className="text-[10px] font-mono text-muted uppercase block mb-1">
                   Reason *
                 </label>
-                <select
-                  value={cancelReason}
-                  onChange={(e) => setCancelReason(e.target.value)}
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-red-500 min-h-[44px]"
-                >
-                  <option value="Customer Request">Customer Request</option>
-                  <option value="Workshop Unavailable">Workshop Unavailable</option>
-                  <option value="Vehicle Issue Resolved">Vehicle Issue Resolved</option>
-                  <option value="Duplicate Booking">Duplicate Booking</option>
-                  <option value="Other">Other</option>
-                </select>
+                <div className="relative">
+                  <select
+                    value={cancelReason}
+                    onChange={(e) => setCancelReason(e.target.value)}
+                    className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs text-warm-white focus:outline-none focus:border-red-500 min-h-[46px]"
+                  >
+                    <option value="Customer Request">Customer Request</option>
+                    <option value="Workshop Unavailable">Workshop Unavailable</option>
+                    <option value="Vehicle Issue Resolved">Vehicle Issue Resolved</option>
+                    <option value="Duplicate Booking">Duplicate Booking</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -2431,28 +2422,12 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                   value={cancelNotes}
                   onChange={(e) => setCancelNotes(e.target.value)}
                   placeholder="Details regarding cancellation..."
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-red-500 min-h-[44px]"
+                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-red-500 min-h-[46px]"
                 />
               </div>
             </div>
-
-            <div className="pt-3 border-t border-graphite-border flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setCancelModalOpen(false)}
-                className="px-4 py-2 bg-graphite text-muted hover:text-warm-white rounded-xs text-xs uppercase min-h-[44px]"
-              >
-                Go Back
-              </button>
-              <button
-                type="submit"
-                className="px-5 py-2 bg-red-500 text-white font-bold rounded-xs text-xs uppercase hover:bg-red-600 transition-colors min-h-[44px]"
-              >
-                Confirm Cancellation
-              </button>
-            </div>
           </form>
-        </div>
+        </MobileFormSheet>
       )}
     </div>
   );

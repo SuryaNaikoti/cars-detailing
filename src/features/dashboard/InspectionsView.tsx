@@ -36,6 +36,7 @@ import {
   Check,
   Lock,
 } from 'lucide-react';
+import { MobileFormSheet } from '../../components/ui/MobileFormSheet';
 
 export interface InspectionsViewProps {
   inspections: Record<string, InspectionRecord>;
@@ -1702,447 +1703,426 @@ export const InspectionsView: React.FC<InspectionsViewProps> = ({
       {/* ============================================================ */}
       {/* MODAL: + NEW INSPECTION FROM JOB CARD                        */}
       {/* ============================================================ */}
-      {newInspectionModalOpen && (
-        <div className="fixed inset-0 z-50 bg-obsidian/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-graphite border border-accent-gold/40 rounded-xs p-6 max-w-md w-full space-y-5 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-accent-gold block">
-                  NEW INSPECTION DOCKET
-                </span>
-                <h3 className="text-base font-bold text-warm-white uppercase">
-                  Initiate Vehicle Assessment
-                </h3>
-              </div>
-              <button
-                onClick={() => setNewInspectionModalOpen(false)}
-                className="text-muted hover:text-warm-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-4 text-xs font-mono">
-              <div className="space-y-1">
-                <label className="text-muted uppercase block">Select Job Card *</label>
-                <select
-                  value={newInspJobId}
-                  onChange={(e) => {
-                    setNewInspJobId(e.target.value);
-                    const j = jobs.find((item) => item.id === e.target.value);
-                    if (j) setNewInspTech(j.technician);
-                  }}
-                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                >
-                  {jobs.map((j) => (
-                    <option key={j.id} value={j.id}>
-                      {j.id} · {j.vehicle_summary} ({j.registration})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-muted uppercase block">Assigned Lead Technician *</label>
-                <input
-                  type="text"
-                  value={newInspTech}
-                  onChange={(e) => setNewInspTech(e.target.value)}
-                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                />
-              </div>
-
-              <p className="text-[11px] text-muted font-sans leading-relaxed">
-                Initializes standard 12-point DVI structure connected directly to this Job Card. Traceability IDs for Lead and Appointment are automatically preserved.
-              </p>
-            </div>
-
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={() => setNewInspectionModalOpen(false)}
-                className="flex-1 py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs text-xs font-mono uppercase min-h-[44px]"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  if (onCreateInspection) {
-                    const created = onCreateInspection(newInspJobId, newInspTech);
-                    if (created) setSelectedInspectionId(created.id);
-                  }
-                  setNewInspectionModalOpen(false);
+      <MobileFormSheet
+        isOpen={newInspectionModalOpen}
+        onClose={() => setNewInspectionModalOpen(false)}
+        title="Initiate Vehicle Assessment"
+        eyebrow="NEW INSPECTION DOCKET"
+        maxWidth="max-w-md"
+        footer={
+          <div className="flex gap-2 w-full font-mono text-xs">
+            <button
+              type="button"
+              onClick={() => setNewInspectionModalOpen(false)}
+              className="flex-1 min-h-[44px] py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs uppercase font-bold"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (onCreateInspection) {
+                  const created = onCreateInspection(newInspJobId, newInspTech);
+                  if (created) setSelectedInspectionId(created.id);
+                }
+                setNewInspectionModalOpen(false);
+              }}
+              className="flex-1 min-h-[44px] py-2.5 px-3 bg-accent-gold text-obsidian rounded-xs font-bold uppercase hover:bg-white"
+            >
+              Create Inspection
+            </button>
+          </div>
+        }
+      >
+        <div className="space-y-4 text-xs font-mono">
+          <div className="space-y-1.5">
+            <label className="text-muted uppercase block text-[10px] font-bold">Select Job Card *</label>
+            <div className="relative">
+              <select
+                value={newInspJobId}
+                onChange={(e) => {
+                  setNewInspJobId(e.target.value);
+                  const j = jobs.find((item) => item.id === e.target.value);
+                  if (j) setNewInspTech(j.technician);
                 }}
-                className="flex-1 py-2.5 px-3 bg-accent-gold text-obsidian rounded-xs text-xs font-bold font-mono uppercase hover:bg-white min-h-[44px]"
+                className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px] appearance-none pr-10"
               >
-                Create Inspection
-              </button>
+                {jobs.map((j) => (
+                  <option key={j.id} value={j.id}>
+                    {j.id} · {j.vehicle_summary} ({j.registration})
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                  <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                </svg>
+              </div>
             </div>
           </div>
+
+          <div className="space-y-1.5">
+            <label className="text-muted uppercase block text-[10px] font-bold">Assigned Lead Technician *</label>
+            <input
+              type="text"
+              value={newInspTech}
+              onChange={(e) => setNewInspTech(e.target.value)}
+              className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+            />
+          </div>
+
+          <p className="text-xs text-muted font-sans leading-relaxed pt-1">
+            Initializes standard 12-point DVI structure connected directly to this Job Card. Traceability IDs for Lead and Appointment are automatically preserved.
+          </p>
         </div>
-      )}
+      </MobileFormSheet>
 
       {/* ============================================================ */}
       {/* MODAL: 14. + ADD FINDING                                     */}
       {/* ============================================================ */}
-      {addFindingModalOpen && (
-        <div className="fixed inset-0 z-50 bg-obsidian/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-graphite border border-accent-gold/40 rounded-xs p-6 max-w-lg w-full space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-accent-gold block">
-                  RECORD FINDING
-                </span>
-                <h3 className="text-base font-bold text-warm-white uppercase">
-                  Add Defect & Recommendation
-                </h3>
+      <MobileFormSheet
+        isOpen={addFindingModalOpen}
+        onClose={() => setAddFindingModalOpen(false)}
+        title="Add Defect & Recommendation"
+        eyebrow="RECORD FINDING"
+        maxWidth="max-w-lg"
+        footer={
+          <div className="flex gap-2 w-full font-mono text-xs">
+            <button
+              type="button"
+              onClick={() => setAddFindingModalOpen(false)}
+              className="flex-1 min-h-[44px] py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs uppercase font-bold"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="add-finding-form"
+              className="flex-1 min-h-[44px] py-2.5 px-3 bg-accent-gold text-obsidian rounded-xs font-bold uppercase hover:bg-white"
+            >
+              Save Finding
+            </button>
+          </div>
+        }
+      >
+        <form id="add-finding-form" onSubmit={handleSaveFinding} className="space-y-4 text-xs font-mono">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-muted uppercase block text-[10px] font-bold">Category *</label>
+              <div className="relative">
+                <select
+                  value={targetCategory}
+                  onChange={(e) => {
+                    setTargetCategory(e.target.value);
+                    const cat = DVI_CATEGORIES.find((c) => c.name === e.target.value);
+                    if (cat && cat.components[0]) setTargetComponent(cat.components[0]);
+                  }}
+                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px] appearance-none pr-10"
+                >
+                  {DVI_CATEGORIES.map((c) => (
+                    <option key={c.id} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                  </svg>
+                </div>
               </div>
-              <button
-                onClick={() => setAddFindingModalOpen(false)}
-                className="text-muted hover:text-warm-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
             </div>
 
-            <form onSubmit={handleSaveFinding} className="space-y-4 text-xs font-mono">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-muted uppercase block">Category *</label>
-                  <select
-                    value={targetCategory}
-                    onChange={(e) => {
-                      setTargetCategory(e.target.value);
-                      const cat = DVI_CATEGORIES.find((c) => c.name === e.target.value);
-                      if (cat && cat.components[0]) setTargetComponent(cat.components[0]);
-                    }}
-                    className="w-full bg-obsidian border border-graphite-border rounded-xs px-2.5 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  >
-                    {DVI_CATEGORIES.map((c) => (
-                      <option key={c.id} value={c.name}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-muted uppercase block">Component *</label>
-                  <input
-                    type="text"
-                    value={targetComponent}
-                    onChange={(e) => setTargetComponent(e.target.value)}
-                    className="w-full bg-obsidian border border-graphite-border rounded-xs px-2.5 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-muted uppercase block">Condition State *</label>
-                  <select
-                    value={targetCondition}
-                    onChange={(e) => setTargetCondition(e.target.value as InspectionCondition)}
-                    className="w-full bg-obsidian border border-graphite-border rounded-xs px-2.5 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  >
-                    <option value="GOOD">Good</option>
-                    <option value="ATTENTION">Attention</option>
-                    <option value="CRITICAL">Critical</option>
-                    <option value="NOT_APPLICABLE">N/A</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-muted uppercase block">Priority *</label>
-                  <select
-                    value={targetPriority}
-                    onChange={(e) => setTargetPriority(e.target.value as FindingPriority)}
-                    className="w-full bg-obsidian border border-graphite-border rounded-xs px-2.5 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  >
-                    <option value="LOW">Low</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="HIGH">High</option>
-                    <option value="CRITICAL">Critical</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-muted uppercase block">Technician Finding *</label>
-                <textarea
-                  rows={2}
-                  required
-                  value={targetFinding}
-                  onChange={(e) => setTargetFinding(e.target.value)}
-                  placeholder="e.g. Pad thickness appears reduced and replacement is recommended."
-                  className="w-full bg-obsidian border border-graphite-border rounded-xs p-2.5 text-xs text-warm-white focus:outline-none focus:border-accent-gold"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-muted uppercase block">Recommendation *</label>
-                <input
-                  type="text"
-                  required
-                  value={targetRecommendation}
-                  onChange={(e) => setTargetRecommendation(e.target.value)}
-                  placeholder="e.g. Replace front brake pads."
-                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-2.5 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-muted uppercase block">Photo URL (Evidence Attachment)</label>
-                <input
-                  type="text"
-                  value={targetPhotoUrl}
-                  onChange={(e) => setTargetPhotoUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-2.5 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                />
-              </div>
-
-              {targetPhotoUrl && (
-                <div className="space-y-1">
-                  <label className="text-muted uppercase block">Photo Caption</label>
-                  <input
-                    type="text"
-                    value={targetCaption}
-                    onChange={(e) => setTargetCaption(e.target.value)}
-                    placeholder="e.g. Visible wear on inner pad."
-                    className="w-full bg-obsidian border border-graphite-border rounded-xs px-2.5 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  />
-                </div>
-              )}
-
-              <div className="flex items-center gap-2 pt-2 border-t border-graphite-border/50">
-                <input
-                  type="checkbox"
-                  id="add_est_check"
-                  checked={targetAddToEstimate}
-                  onChange={(e) => setTargetAddToEstimate(e.target.checked)}
-                  className="w-4 h-4 rounded-xs text-accent-gold focus:ring-0"
-                />
-                <label htmlFor="add_est_check" className="text-xs text-warm-white cursor-pointer select-none">
-                  Flag finding for customer estimate recommendation
-                </label>
-              </div>
-
-              <div className="flex gap-2 pt-3">
-                <button
-                  type="button"
-                  onClick={() => setAddFindingModalOpen(false)}
-                  className="flex-1 py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs text-xs font-mono uppercase min-h-[44px]"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-2.5 px-3 bg-accent-gold text-obsidian rounded-xs text-xs font-bold font-mono uppercase hover:bg-white min-h-[44px]"
-                >
-                  Save Finding
-                </button>
-              </div>
-            </form>
+            <div className="space-y-1.5">
+              <label className="text-muted uppercase block text-[10px] font-bold">Component *</label>
+              <input
+                type="text"
+                value={targetComponent}
+                onChange={(e) => setTargetComponent(e.target.value)}
+                className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+              />
+            </div>
           </div>
-        </div>
-      )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-muted uppercase block text-[10px] font-bold">Condition State *</label>
+              <div className="relative">
+                <select
+                  value={targetCondition}
+                  onChange={(e) => setTargetCondition(e.target.value as InspectionCondition)}
+                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px] appearance-none pr-10"
+                >
+                  <option value="GOOD">Good</option>
+                  <option value="ATTENTION">Attention</option>
+                  <option value="CRITICAL">Critical</option>
+                  <option value="NOT_APPLICABLE">N/A</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-muted uppercase block text-[10px] font-bold">Priority *</label>
+              <div className="relative">
+                <select
+                  value={targetPriority}
+                  onChange={(e) => setTargetPriority(e.target.value as FindingPriority)}
+                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px] appearance-none pr-10"
+                >
+                  <option value="LOW">Low</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HIGH">High</option>
+                  <option value="CRITICAL">Critical</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-muted uppercase block text-[10px] font-bold">Technician Finding *</label>
+            <textarea
+              rows={2}
+              required
+              value={targetFinding}
+              onChange={(e) => setTargetFinding(e.target.value)}
+              placeholder="e.g. Pad thickness appears reduced and replacement is recommended."
+              className="w-full bg-obsidian border border-graphite-border rounded-xs p-3 text-xs text-warm-white focus:outline-none focus:border-accent-gold"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-muted uppercase block text-[10px] font-bold">Recommendation *</label>
+            <input
+              type="text"
+              required
+              value={targetRecommendation}
+              onChange={(e) => setTargetRecommendation(e.target.value)}
+              placeholder="e.g. Replace front brake pads."
+              className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-muted uppercase block text-[10px] font-bold">Photo URL (Evidence Attachment)</label>
+            <input
+              type="text"
+              value={targetPhotoUrl}
+              onChange={(e) => setTargetPhotoUrl(e.target.value)}
+              placeholder="https://..."
+              className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+            />
+          </div>
+
+          {targetPhotoUrl && (
+            <div className="space-y-1.5">
+              <label className="text-muted uppercase block text-[10px] font-bold">Photo Caption</label>
+              <input
+                type="text"
+                value={targetCaption}
+                onChange={(e) => setTargetCaption(e.target.value)}
+                placeholder="e.g. Visible wear on inner pad."
+                className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+              />
+            </div>
+          )}
+
+          <div className="flex items-center gap-3 pt-2 border-t border-graphite-border/50">
+            <input
+              type="checkbox"
+              id="add_est_check"
+              checked={targetAddToEstimate}
+              onChange={(e) => setTargetAddToEstimate(e.target.checked)}
+              className="w-4 h-4 rounded-xs text-accent-gold focus:ring-0 cursor-pointer"
+            />
+            <label htmlFor="add_est_check" className="text-xs text-warm-white cursor-pointer select-none">
+              Flag finding for customer estimate recommendation
+            </label>
+          </div>
+        </form>
+      </MobileFormSheet>
 
       {/* ============================================================ */}
       {/* MODAL: ATTACH PHOTO EVIDENCE                                 */}
       {/* ============================================================ */}
-      {attachEvidenceModalOpen && (
-        <div className="fixed inset-0 z-50 bg-obsidian/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-graphite border border-accent-gold/40 rounded-xs p-6 max-w-md w-full space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-accent-gold block">
-                  ATTACH EVIDENCE
-                </span>
-                <h3 className="text-base font-bold text-warm-white uppercase">
-                  Vehicle Inspection Photo
-                </h3>
-              </div>
-              <button
-                onClick={() => setAttachEvidenceModalOpen(false)}
-                className="text-muted hover:text-warm-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+      <MobileFormSheet
+        isOpen={attachEvidenceModalOpen}
+        onClose={() => setAttachEvidenceModalOpen(false)}
+        title="Vehicle Inspection Photo"
+        eyebrow="ATTACH EVIDENCE"
+        maxWidth="max-w-md"
+        footer={
+          <div className="flex gap-2 w-full font-mono text-xs">
+            <button
+              type="button"
+              onClick={() => setAttachEvidenceModalOpen(false)}
+              className="flex-1 min-h-[44px] py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs uppercase font-bold"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const urlInput = (document.getElementById('evidence_url_input') as HTMLInputElement)?.value;
+                const capInput = (document.getElementById('evidence_caption_input') as HTMLInputElement)?.value;
 
-            <div className="space-y-3 text-xs font-mono">
-              <div className="space-y-1">
-                <label className="text-muted uppercase block">Photo URL *</label>
-                <input
-                  type="text"
-                  id="evidence_url_input"
-                  placeholder="https://..."
-                  defaultValue="https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80"
-                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                />
-              </div>
+                if (urlInput && activeInspection) {
+                  const newEvidence: InspectionEvidence = {
+                    id: 'ev-' + Date.now(),
+                    inspection_id: activeInspection.id,
+                    file_url: urlInput,
+                    caption: capInput,
+                    created_at: new Date().toISOString(),
+                    uploaded_by: activeInspection.inspector_name,
+                  };
 
-              <div className="space-y-1">
-                <label className="text-muted uppercase block">Caption *</label>
-                <input
-                  type="text"
-                  id="evidence_caption_input"
-                  placeholder="e.g. Brake pad wear indicator showing friction wear."
-                  defaultValue="Brake pad friction wear inspection photo."
-                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                />
-              </div>
-            </div>
+                  onSaveInspection({
+                    ...activeInspection,
+                    evidence: [newEvidence, ...(activeInspection.evidence || [])],
+                    updated_at: new Date().toISOString(),
+                  });
+                }
+                setAttachEvidenceModalOpen(false);
+              }}
+              className="flex-1 min-h-[44px] py-2.5 px-3 bg-accent-gold text-obsidian rounded-xs font-bold uppercase hover:bg-white"
+            >
+              Attach Photo
+            </button>
+          </div>
+        }
+      >
+        <div className="space-y-4 text-xs font-mono">
+          <div className="space-y-1.5">
+            <label className="text-muted uppercase block text-[10px] font-bold">Photo URL *</label>
+            <input
+              type="text"
+              id="evidence_url_input"
+              placeholder="https://..."
+              defaultValue="https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80"
+              className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+            />
+          </div>
 
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={() => setAttachEvidenceModalOpen(false)}
-                className="flex-1 py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs text-xs font-mono uppercase min-h-[44px]"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  const urlInput = (document.getElementById('evidence_url_input') as HTMLInputElement)?.value;
-                  const capInput = (document.getElementById('evidence_caption_input') as HTMLInputElement)?.value;
-
-                  if (urlInput && activeInspection) {
-                    const newEvidence: InspectionEvidence = {
-                      id: 'ev-' + Date.now(),
-                      inspection_id: activeInspection.id,
-                      file_url: urlInput,
-                      caption: capInput,
-                      created_at: new Date().toISOString(),
-                      uploaded_by: activeInspection.inspector_name,
-                    };
-
-                    onSaveInspection({
-                      ...activeInspection,
-                      evidence: [newEvidence, ...(activeInspection.evidence || [])],
-                      updated_at: new Date().toISOString(),
-                    });
-                  }
-                  setAttachEvidenceModalOpen(false);
-                }}
-                className="flex-1 py-2.5 px-3 bg-accent-gold text-obsidian rounded-xs text-xs font-bold font-mono uppercase hover:bg-white min-h-[44px]"
-              >
-                Attach Photo
-              </button>
-            </div>
+          <div className="space-y-1.5">
+            <label className="text-muted uppercase block text-[10px] font-bold">Caption *</label>
+            <input
+              type="text"
+              id="evidence_caption_input"
+              placeholder="e.g. Brake pad wear indicator showing friction wear."
+              defaultValue="Brake pad friction wear inspection photo."
+              className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+            />
           </div>
         </div>
-      )}
+      </MobileFormSheet>
 
       {/* ============================================================ */}
       {/* 16. BULK ESTIMATE HANDOFF MODAL                             */}
       {/* ============================================================ */}
-      {reviewRecommendationsModalOpen && (
-        <div className="fixed inset-0 z-50 bg-obsidian/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-graphite border border-accent-gold/40 rounded-xs p-6 max-w-xl w-full space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-accent-gold block">
-                  RECOMMENDATIONS FOR ESTIMATE
-                </span>
-                <h3 className="text-base font-bold text-warm-white uppercase">
-                  {(activeInspection?.findings || []).filter((f) => f.add_to_estimate).length} items selected
-                </h3>
-              </div>
-              <button
-                onClick={() => setReviewRecommendationsModalOpen(false)}
-                className="text-muted hover:text-warm-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+      <MobileFormSheet
+        isOpen={reviewRecommendationsModalOpen}
+        onClose={() => setReviewRecommendationsModalOpen(false)}
+        title={`${(activeInspection?.findings || []).filter((f) => f.add_to_estimate).length} items selected`}
+        eyebrow="RECOMMENDATIONS FOR ESTIMATE"
+        maxWidth="max-w-xl"
+        footer={
+          <div className="flex gap-2 w-full font-mono text-xs">
+            <button
+              type="button"
+              onClick={() => setReviewRecommendationsModalOpen(false)}
+              className="flex-1 min-h-[44px] py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs uppercase font-bold"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setReviewRecommendationsModalOpen(false);
+                if (onNavigateModule) onNavigateModule('estimates');
+              }}
+              className="flex-1 min-h-[44px] py-2.5 px-3 bg-accent-gold text-obsidian rounded-xs font-bold uppercase hover:bg-white transition-colors flex items-center justify-center gap-1.5"
+            >
+              <Calculator className="w-4 h-4" />
+              <span>ESTIMATE SCOPE →</span>
+            </button>
+          </div>
+        }
+      >
+        <div className="space-y-3">
+          <p className="text-xs text-muted leading-relaxed">
+            The following inspection findings have been flagged for customer recommended work. Pricing is not fabricated and will be priced within Estimates & Approvals.
+          </p>
 
-            <div className="space-y-3">
-              <p className="text-xs text-muted">
-                The following inspection findings have been flagged for customer recommended work. Pricing is not fabricated and will be priced within Estimates & Approvals.
+          <div className="space-y-2">
+            {(activeInspection?.findings || [])
+              .filter((f) => f.add_to_estimate)
+              .map((f, idx) => (
+                <div
+                  key={f.id}
+                  className="p-3 rounded-xs bg-obsidian border border-graphite-border text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono"
+                >
+                  <div className="space-y-0.5">
+                    <span className="font-bold text-warm-white block">
+                      {idx + 1}. {f.recommendation}
+                    </span>
+                    <span className="text-[11px] text-muted-dark">
+                      Origin: {f.category} ({f.component}) · Priority: {f.priority || 'NORMAL'}
+                    </span>
+                  </div>
+                  <span className="text-accent-gold text-[10px] uppercase font-bold shrink-0">
+                    Price not yet configured
+                  </span>
+                </div>
+              ))}
+
+            {(!activeInspection?.findings ||
+              activeInspection.findings.filter((f) => f.add_to_estimate).length === 0) && (
+              <p className="text-xs text-muted-dark font-mono p-4 text-center bg-obsidian rounded-xs">
+                No findings are currently flagged for estimate creation.
               </p>
-
-              <div className="space-y-2">
-                {(activeInspection?.findings || [])
-                  .filter((f) => f.add_to_estimate)
-                  .map((f, idx) => (
-                    <div
-                      key={f.id}
-                      className="p-3 rounded-xs bg-obsidian border border-graphite-border text-xs flex items-center justify-between gap-3 font-mono"
-                    >
-                      <div className="space-y-0.5">
-                        <span className="font-bold text-warm-white block">
-                          {idx + 1}. {f.recommendation}
-                        </span>
-                        <span className="text-[11px] text-muted-dark">
-                          Origin: {f.category} ({f.component}) · Priority: {f.priority || 'NORMAL'}
-                        </span>
-                      </div>
-                      <span className="text-accent-gold text-[10px] uppercase font-bold shrink-0">
-                        Price not yet configured
-                      </span>
-                    </div>
-                  ))}
-
-                {(!activeInspection?.findings ||
-                  activeInspection.findings.filter((f) => f.add_to_estimate).length === 0) && (
-                  <p className="text-xs text-muted-dark font-mono p-4 text-center bg-obsidian rounded-xs">
-                    No findings are currently flagged for estimate creation.
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="flex gap-2 pt-3 border-t border-graphite-border">
-              <button
-                onClick={() => setReviewRecommendationsModalOpen(false)}
-                className="flex-1 py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs text-xs font-mono uppercase min-h-[44px]"
-              >
-                Close
-              </button>
-
-              <button
-                onClick={() => {
-                  setReviewRecommendationsModalOpen(false);
-                  if (onNavigateModule) onNavigateModule('estimates');
-                }}
-                className="flex-1 py-2.5 px-3 bg-accent-gold text-obsidian rounded-xs text-xs font-bold font-mono uppercase hover:bg-white transition-colors flex items-center justify-center gap-1.5 min-h-[44px]"
-              >
-                <Calculator className="w-4 h-4" />
-                <span>CREATE / UPDATE ESTIMATE →</span>
-              </button>
-            </div>
+            )}
           </div>
         </div>
-      )}
+      </MobileFormSheet>
 
       {/* ============================================================ */}
       {/* 17. CUSTOMER VIEW PREVIEW MODAL                              */}
       {/* ============================================================ */}
-      {customerPreviewModalOpen && activeInspection && (
-        <div className="fixed inset-0 z-50 bg-obsidian/90 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-obsidian border border-purple-500/40 rounded-xs p-6 max-w-2xl w-full space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-purple-400 block font-bold">
-                  CUSTOMER VEHICLE HEALTH REPORT
-                </span>
-                <h3 className="text-lg font-bold text-warm-white">
-                  {activeInspection.vehicle_summary} ({activeInspection.registration})
-                </h3>
-                <p className="text-xs text-muted">
-                  Inspected on {new Date(activeInspection.completed_at || activeInspection.started_at || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
-                </p>
-              </div>
+      {activeInspection && (
+        <MobileFormSheet
+          isOpen={customerPreviewModalOpen}
+          onClose={() => setCustomerPreviewModalOpen(false)}
+          title={`${activeInspection.vehicle_summary} (${activeInspection.registration})`}
+          eyebrow="CUSTOMER VEHICLE HEALTH REPORT"
+          maxWidth="max-w-2xl"
+          footer={
+            <div className="w-full flex justify-end">
               <button
+                type="button"
                 onClick={() => setCustomerPreviewModalOpen(false)}
-                className="text-muted hover:text-warm-white"
+                className="w-full sm:w-auto min-h-[44px] px-6 py-2.5 bg-purple-500 text-white rounded-xs text-xs font-mono font-bold uppercase hover:bg-white hover:text-obsidian"
               >
-                <X className="w-5 h-5" />
+                Close Customer View
               </button>
             </div>
+          }
+        >
+          <div className="space-y-6">
+            <p className="text-xs text-muted font-mono">
+              Inspected on {new Date(activeInspection.completed_at || activeInspection.started_at || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </p>
 
             {/* Customer-Friendly Overall Condition */}
-            <div className="p-4 rounded-xs bg-graphite/40 border border-graphite-border space-y-2">
+            <div className="p-4 rounded-xs bg-graphite/40 border border-graphite-border space-y-3">
               <span className="text-xs font-mono uppercase tracking-wider text-accent-gold block font-bold">
                 Vehicle Inspection Overview
               </span>
@@ -2150,16 +2130,16 @@ export const InspectionsView: React.FC<InspectionsViewProps> = ({
                 Our technicians performed a complete 12-point health evaluation on your vehicle. Below is the summary of components in good condition, items requiring attention, and technician recommendations.
               </p>
 
-              <div className="grid grid-cols-3 gap-2 pt-2 text-center font-mono">
-                <div className="p-2 bg-emerald-500/10 border border-emerald-500/30 rounded-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 text-center font-mono">
+                <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xs">
                   <span className="text-[10px] text-emerald-400 uppercase block font-bold">Good Condition</span>
                   <span className="text-base font-bold text-emerald-400">{conditionSummary.good} Items</span>
                 </div>
-                <div className="p-2 bg-amber-500/10 border border-amber-500/30 rounded-xs">
+                <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xs">
                   <span className="text-[10px] text-amber-400 uppercase block font-bold">Needs Attention</span>
                   <span className="text-base font-bold text-amber-400">{conditionSummary.attention} Items</span>
                 </div>
-                <div className="p-2 bg-red-500/10 border border-red-500/30 rounded-xs">
+                <div className="p-2.5 bg-red-500/10 border border-red-500/30 rounded-xs">
                   <span className="text-[10px] text-red-400 uppercase block font-bold">Critical Items</span>
                   <span className="text-base font-bold text-red-400">{conditionSummary.critical} Items</span>
                 </div>
@@ -2172,24 +2152,24 @@ export const InspectionsView: React.FC<InspectionsViewProps> = ({
                 Detailed Technician Observations
               </h4>
 
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 {(activeInspection.findings || []).map((f) => {
                   const isCrit = f.condition === 'CRITICAL';
                   return (
                     <div
                       key={f.id}
-                      className={`p-3.5 rounded-xs border text-xs space-y-2 ${
+                      className={`p-3.5 rounded-xs border text-xs space-y-2.5 ${
                         isCrit
                           ? 'bg-red-500/10 border-red-500/40 text-red-200'
                           : 'bg-graphite/30 border-graphite-border text-warm-white'
                       }`}
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                         <span className="font-bold text-sm text-warm-white">
                           {f.component || f.category}
                         </span>
                         <span
-                          className={`text-[9px] font-mono px-2 py-0.5 rounded-xs uppercase font-bold ${
+                          className={`text-[9px] font-mono px-2 py-0.5 rounded-xs uppercase font-bold self-start sm:self-auto ${
                             isCrit
                               ? 'bg-red-500/20 text-red-400'
                               : 'bg-amber-500/20 text-amber-400'
@@ -2217,7 +2197,7 @@ export const InspectionsView: React.FC<InspectionsViewProps> = ({
                           <img
                             src={f.photo_url}
                             alt={f.finding}
-                            className="w-full h-40 object-cover rounded-xs border border-graphite-border"
+                            className="w-full h-44 object-cover rounded-xs border border-graphite-border"
                           />
                         </div>
                       )}
@@ -2232,17 +2212,8 @@ export const InspectionsView: React.FC<InspectionsViewProps> = ({
                 )}
               </div>
             </div>
-
-            <div className="pt-2 border-t border-graphite-border flex justify-end">
-              <button
-                onClick={() => setCustomerPreviewModalOpen(false)}
-                className="px-4 py-2 bg-purple-500 text-white rounded-xs text-xs font-mono font-bold uppercase hover:bg-white hover:text-obsidian"
-              >
-                Close Customer View
-              </button>
-            </div>
           </div>
-        </div>
+        </MobileFormSheet>
       )}
     </div>
   );

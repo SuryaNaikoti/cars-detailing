@@ -25,6 +25,7 @@ import {
   RotateCcw,
   Check,
 } from 'lucide-react';
+import { MobileFormSheet } from '../../components/ui/MobileFormSheet';
 
 export interface RemindersViewProps {
   reminders: ServiceReminder[];
@@ -933,174 +934,180 @@ export const RemindersView: React.FC<RemindersViewProps> = ({
       {/* 6. MODAL: + NEW REMINDER / CREATE FUTURE FOLLOW-UP           */}
       {/* ============================================================ */}
       {modalOpen && (
-        <div
-          data-testid="add-reminder-modal"
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
+        <MobileFormSheet
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          eyebrow="CUSTOMER RETENTION"
+          title="SCHEDULE SERVICE FOLLOW-UP"
+          primaryActionLabel="Save Follow-Up"
+          onPrimaryAction={() => {
+            const form = document.getElementById('reminder-modal-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionVariant="gold"
+          maxWidthClass="sm:max-w-lg"
         >
-          <div className="bg-obsidian border border-graphite-border rounded-xs max-w-lg w-full p-6 space-y-4 shadow-2xl relative my-8">
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono uppercase text-accent-gold tracking-widest block">
-                  CUSTOMER RETENTION
-                </span>
-                <h3 className="text-lg font-bold text-warm-white uppercase">
-                  Schedule Service Follow-Up
-                </h3>
-              </div>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="p-1 rounded-xs hover:bg-graphite text-muted hover:text-warm-white transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateReminderSubmit} className="space-y-4 text-xs font-mono">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
-                    Customer Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    data-testid="modal-input-customer"
-                    value={modalCustomer}
-                    onChange={(e) => setModalCustomer(e.target.value)}
-                    placeholder="e.g. Rahul Mehta"
-                    className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-3 py-2 text-warm-white focus:outline-none focus:border-accent-gold"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
-                    Customer Phone *
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    data-testid="modal-input-phone"
-                    value={modalPhone}
-                    onChange={(e) => setModalPhone(e.target.value)}
-                    placeholder="+91 98765 43210"
-                    className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-3 py-2 text-warm-white focus:outline-none focus:border-accent-gold"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
-                    Vehicle Model
-                  </label>
-                  <input
-                    type="text"
-                    value={modalVehicle}
-                    onChange={(e) => setModalVehicle(e.target.value)}
-                    placeholder="2022 BMW 5 Series (G30)"
-                    className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-3 py-2 text-warm-white focus:outline-none focus:border-accent-gold"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
-                    Registration *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    data-testid="modal-input-reg"
-                    value={modalReg}
-                    onChange={(e) => setModalReg(e.target.value)}
-                    placeholder="MH 02 ER 4500"
-                    className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-3 py-2 text-warm-white uppercase focus:outline-none focus:border-accent-gold"
-                  />
-                </div>
-              </div>
-
+          <form id="reminder-modal-form" onSubmit={handleCreateReminderSubmit} className="space-y-4 text-xs font-mono">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
-                  Service / Follow-Up Scope *
+                  Customer Name *
                 </label>
                 <input
                   type="text"
                   required
-                  data-testid="modal-input-service"
-                  value={modalService}
-                  onChange={(e) => setModalService(e.target.value)}
-                  placeholder="e.g. Front parking sensor replacement or Scheduled service interval"
-                  className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-3 py-2 text-warm-white focus:outline-none focus:border-accent-gold"
+                  data-testid="modal-input-customer"
+                  value={modalCustomer}
+                  onChange={(e) => setModalCustomer(e.target.value)}
+                  placeholder="e.g. Rahul Mehta"
+                  className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-3 py-2 text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
-                    Due Date *
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={modalDueDate}
-                    onChange={(e) => setModalDueDate(e.target.value)}
-                    className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-2.5 py-1.5 text-warm-white focus:outline-none focus:border-accent-gold"
-                  />
-                </div>
+              <div>
+                <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
+                  Customer Phone *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  data-testid="modal-input-phone"
+                  value={modalPhone}
+                  onChange={(e) => setModalPhone(e.target.value)}
+                  placeholder="+91 98765 43210"
+                  className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-3 py-2 text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                />
+              </div>
+            </div>
 
-                <div>
-                  <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
-                    Type
-                  </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
+                  Vehicle Model
+                </label>
+                <input
+                  type="text"
+                  value={modalVehicle}
+                  onChange={(e) => setModalVehicle(e.target.value)}
+                  placeholder="2022 BMW 5 Series (G30)"
+                  className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-3 py-2 text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
+                  Registration *
+                </label>
+                <input
+                  type="text"
+                  required
+                  data-testid="modal-input-reg"
+                  value={modalReg}
+                  onChange={(e) => setModalReg(e.target.value)}
+                  placeholder="MH 02 ER 4500"
+                  className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-3 py-2 text-warm-white uppercase focus:outline-none focus:border-accent-gold min-h-[46px]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
+                Service / Follow-Up Scope *
+              </label>
+              <input
+                type="text"
+                required
+                data-testid="modal-input-service"
+                value={modalService}
+                onChange={(e) => setModalService(e.target.value)}
+                placeholder="e.g. Front parking sensor replacement or Scheduled service interval"
+                className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-3 py-2 text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
+                  Due Date *
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={modalDueDate}
+                  onChange={(e) => setModalDueDate(e.target.value)}
+                  className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-2.5 py-2 text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
+                  Type
+                </label>
+                <div className="relative">
                   <select
                     value={modalType}
                     onChange={(e) => setModalType(e.target.value as any)}
-                    className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-2 py-2 text-warm-white focus:outline-none focus:border-accent-gold text-xs"
+                    className="w-full appearance-none bg-graphite/40 border border-graphite-border rounded-xs px-3 py-2 pr-10 text-warm-white focus:outline-none focus:border-accent-gold text-xs min-h-[46px]"
                   >
                     <option value="SERVICE_DUE">Service Due</option>
                     <option value="DECLINED_RECOMMENDATION">Declined Rec</option>
                     <option value="SEASONAL_CHECK">Seasonal</option>
                     <option value="GENERAL_FOLLOW_UP">General</option>
                   </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
+              </div>
 
-                <div>
-                  <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
-                    Priority
-                  </label>
+              <div>
+                <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
+                  Priority
+                </label>
+                <div className="relative">
                   <select
                     value={modalPriority}
                     onChange={(e) => setModalPriority(e.target.value as any)}
-                    className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-2 py-2 text-warm-white focus:outline-none focus:border-accent-gold text-xs"
+                    className="w-full appearance-none bg-graphite/40 border border-graphite-border rounded-xs px-3 py-2 pr-10 text-warm-white focus:outline-none focus:border-accent-gold text-xs min-h-[46px]"
                   >
                     <option value="HIGH">High</option>
                     <option value="NORMAL">Normal</option>
                     <option value="LOW">Low</option>
                   </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
-                    Reason / Context
-                  </label>
-                  <input
-                    type="text"
-                    value={modalReason}
-                    onChange={(e) => setModalReason(e.target.value)}
-                    placeholder="e.g. Deferred during EST-2026-2048"
-                    className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-3 py-2 text-warm-white focus:outline-none focus:border-accent-gold"
-                  />
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
+                  Reason / Context
+                </label>
+                <input
+                  type="text"
+                  value={modalReason}
+                  onChange={(e) => setModalReason(e.target.value)}
+                  placeholder="e.g. Deferred during EST-2026-2048"
+                  className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-3 py-2 text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                />
+              </div>
 
-                <div>
-                  <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
-                    Assigned Advisor
-                  </label>
+              <div>
+                <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
+                  Assigned Advisor
+                </label>
+                <div className="relative">
                   <select
                     value={modalAdvisor}
                     onChange={(e) => setModalAdvisor(e.target.value)}
-                    className="w-full bg-graphite/40 border border-graphite-border rounded-xs px-2.5 py-2 text-warm-white focus:outline-none focus:border-accent-gold text-xs"
+                    className="w-full appearance-none bg-graphite/40 border border-graphite-border rounded-xs px-3 py-2 pr-10 text-warm-white focus:outline-none focus:border-accent-gold text-xs min-h-[46px]"
                   >
                     {ADVISORS.map((adv) => (
                       <option key={adv} value={adv}>
@@ -1108,41 +1115,29 @@ export const RemindersView: React.FC<RemindersViewProps> = ({
                       </option>
                     ))}
                   </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div>
-                <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
-                  Internal Notes
-                </label>
-                <textarea
-                  rows={2}
-                  value={modalNotes}
-                  onChange={(e) => setModalNotes(e.target.value)}
-                  placeholder="Customer preferences, discount authorizations, or part procurement details..."
-                  className="w-full bg-graphite/40 border border-graphite-border rounded-xs p-2.5 text-warm-white focus:outline-none focus:border-accent-gold resize-none"
-                />
-              </div>
-
-              <div className="pt-2 border-t border-graphite-border flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="px-3 py-2 rounded-xs border border-graphite-border text-xs text-muted hover:text-warm-white cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  data-testid="modal-submit-btn"
-                  className="px-4 py-2 rounded-xs bg-accent-gold hover:bg-accent-gold/90 text-obsidian text-xs font-bold uppercase tracking-wider cursor-pointer shadow-md"
-                >
-                  Save Follow-Up
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+            <div>
+              <label className="text-[10px] text-muted-dark uppercase tracking-wider block mb-1">
+                Internal Notes
+              </label>
+              <textarea
+                rows={2}
+                value={modalNotes}
+                onChange={(e) => setModalNotes(e.target.value)}
+                placeholder="Customer preferences, discount authorizations, or part procurement details..."
+                className="w-full bg-graphite/40 border border-graphite-border rounded-xs p-2.5 text-warm-white focus:outline-none focus:border-accent-gold resize-none min-h-[64px]"
+              />
+            </div>
+          </form>
+        </MobileFormSheet>
       )}
     </div>
   );

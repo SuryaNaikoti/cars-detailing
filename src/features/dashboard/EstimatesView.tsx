@@ -29,10 +29,10 @@ import {
   ChevronLeft,
   MessageSquare,
   Wrench,
-  X,
   Sparkles,
   Printer,
 } from 'lucide-react';
+import { MobileFormSheet } from '../../components/ui/MobileFormSheet';
 
 export interface EstimatesViewProps {
   estimates: Record<string, EstimateRecord>;
@@ -1392,62 +1392,57 @@ export const EstimatesView: React.FC<EstimatesViewProps> = ({
       {/* MODAL 1: + NEW ESTIMATE (From Inspection or Job Card)        */}
       {/* ============================================================ */}
       {newEstimateModalOpen && (
-        <div className="fixed inset-0 z-50 bg-obsidian/85 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-graphite border border-accent-gold/40 rounded-xs p-6 max-w-lg w-full space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-accent-gold block font-bold">
-                  NEW ESTIMATE
-                </span>
-                <h3 className="text-base font-bold text-warm-white uppercase">
-                  Initiate Commercial Estimate
-                </h3>
+        <MobileFormSheet
+          isOpen={newEstimateModalOpen}
+          onClose={() => setNewEstimateModalOpen(false)}
+          eyebrow="NEW ESTIMATE"
+          title="INITIATE COMMERCIAL ESTIMATE"
+          primaryActionLabel="Create Estimate →"
+          onPrimaryAction={() => {
+            const form = document.getElementById('new-estimate-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionVariant="gold"
+          maxWidthClass="sm:max-w-lg"
+        >
+          <form id="new-estimate-form" onSubmit={handleCreateEstimateSubmit} className="space-y-4 font-mono text-xs">
+            {/* Origin Selection */}
+            <div className="space-y-1">
+              <label className="text-muted uppercase block text-[10px]">Commercial Origin *</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCreationOrigin('INSPECTION')}
+                  className={`py-2 px-3 rounded-xs text-xs font-mono uppercase font-bold border transition-colors min-h-[44px] cursor-pointer ${
+                    creationOrigin === 'INSPECTION'
+                      ? 'bg-accent-gold text-obsidian border-accent-gold'
+                      : 'bg-obsidian text-muted border-graphite-border'
+                  }`}
+                >
+                  From Inspection
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCreationOrigin('JOB')}
+                  className={`py-2 px-3 rounded-xs text-xs font-mono uppercase font-bold border transition-colors min-h-[44px] cursor-pointer ${
+                    creationOrigin === 'JOB'
+                      ? 'bg-accent-gold text-obsidian border-accent-gold'
+                      : 'bg-obsidian text-muted border-graphite-border'
+                  }`}
+                >
+                  Manual Scope
+                </button>
               </div>
-              <button
-                onClick={() => setNewEstimateModalOpen(false)}
-                className="text-muted hover:text-warm-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
             </div>
 
-            <form onSubmit={handleCreateEstimateSubmit} className="space-y-4 font-mono text-xs">
-              {/* Origin Selection */}
-              <div className="space-y-1">
-                <label className="text-muted uppercase block text-[10px]">Commercial Origin *</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setCreationOrigin('INSPECTION')}
-                    className={`py-2 px-3 rounded-xs text-xs font-mono uppercase font-bold border transition-colors ${
-                      creationOrigin === 'INSPECTION'
-                        ? 'bg-accent-gold text-obsidian border-accent-gold'
-                        : 'bg-obsidian text-muted border-graphite-border'
-                    }`}
-                  >
-                    From DVI Inspection
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCreationOrigin('JOB')}
-                    className={`py-2 px-3 rounded-xs text-xs font-mono uppercase font-bold border transition-colors ${
-                      creationOrigin === 'JOB'
-                        ? 'bg-accent-gold text-obsidian border-accent-gold'
-                        : 'bg-obsidian text-muted border-graphite-border'
-                    }`}
-                  >
-                    Manual Job Scope
-                  </button>
-                </div>
-              </div>
-
-              {/* Source Job Card */}
-              <div className="space-y-1">
-                <label className="text-muted uppercase block text-[10px]">Source Job Card *</label>
+            {/* Source Job Card */}
+            <div className="space-y-1">
+              <label className="text-muted uppercase block text-[10px]">Source Job Card *</label>
+              <div className="relative">
                 <select
                   value={selectedInspJobId}
                   onChange={(e) => setSelectedInspJobId(e.target.value)}
-                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold"
+                  className="w-full appearance-none bg-obsidian border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                 >
                   {jobs.map((j) => (
                     <option key={j.id} value={j.id}>
@@ -1455,366 +1450,327 @@ export const EstimatesView: React.FC<EstimatesViewProps> = ({
                     </option>
                   ))}
                 </select>
-              </div>
-
-              {/* If From Inspection: Select Findings */}
-              {creationOrigin === 'INSPECTION' && (
-                <div className="space-y-2 p-3 rounded-xs bg-obsidian border border-graphite-border">
-                  <span className="text-[10px] text-accent-gold uppercase block font-bold">
-                    Select Inspection Recommendations to Transfer
-                  </span>
-
-                  {(() => {
-                    const targetInsp = Object.values(inspections).find(
-                      (i) => i.job_id === selectedInspJobId || i.id === selectedInspJobId
-                    );
-                    if (!targetInsp || !targetInsp.findings || targetInsp.findings.length === 0) {
-                      return (
-                        <p className="text-[11px] text-muted font-light">
-                          No findings recorded on {selectedInspJobId} yet. Default draft lines will be initialized.
-                        </p>
-                      );
-                    }
-
-                    return (
-                      <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
-                        {targetInsp.findings.map((f) => (
-                          <label
-                            key={f.id}
-                            className="flex items-start gap-2 p-2 rounded-xs bg-graphite/40 border border-graphite-border/60 cursor-pointer hover:bg-graphite"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={Boolean(selectedFindingCheckboxes[f.id])}
-                              onChange={(e) =>
-                                setSelectedFindingCheckboxes({
-                                  ...selectedFindingCheckboxes,
-                                  [f.id]: e.target.checked,
-                                })
-                              }
-                              className="mt-0.5 rounded-xs accent-accent-gold"
-                            />
-                            <div className="space-y-0.5">
-                              <span className="text-warm-white font-medium block">
-                                {f.recommendation || f.finding}
-                              </span>
-                              <span className="text-[10px] text-muted-dark block">
-                                {f.category} ({f.component || 'Component'}) · Priority: {f.priority || 'NORMAL'}
-                              </span>
-                            </div>
-                          </label>
-                        ))}
-                      </div>
-                    );
-                  })()}
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
                 </div>
-              )}
-
-              {/* Service Advisor */}
-              <div className="space-y-1">
-                <label className="text-muted uppercase block text-[10px]">Service Advisor *</label>
-                <input
-                  type="text"
-                  required
-                  value={advisorInput}
-                  onChange={(e) => setAdvisorInput(e.target.value)}
-                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold"
-                />
               </div>
+            </div>
 
-              <div className="flex gap-2 pt-3 border-t border-graphite-border">
-                <button
-                  type="button"
-                  onClick={() => setNewEstimateModalOpen(false)}
-                  className="flex-1 py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs text-xs font-mono uppercase"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-2.5 px-3 bg-accent-gold text-obsidian font-bold rounded-xs text-xs uppercase hover:bg-white"
-                >
-                  Create Estimate →
-                </button>
+            {/* If From Inspection: Select Findings */}
+            {creationOrigin === 'INSPECTION' && (
+              <div className="space-y-2 p-3 rounded-xs bg-obsidian border border-graphite-border">
+                <span className="text-[10px] text-accent-gold uppercase block font-bold">
+                  Select Inspection Recommendations to Transfer
+                </span>
+
+                {(() => {
+                  const targetInsp = Object.values(inspections).find(
+                    (i) => i.job_id === selectedInspJobId || i.id === selectedInspJobId
+                  );
+                  if (!targetInsp || !targetInsp.findings || targetInsp.findings.length === 0) {
+                    return (
+                      <p className="text-[11px] text-muted font-light">
+                        No findings recorded on {selectedInspJobId} yet. Default draft lines will be initialized.
+                      </p>
+                    );
+                  }
+
+                  return (
+                    <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                      {targetInsp.findings.map((f) => (
+                        <label
+                          key={f.id}
+                          className="flex items-start gap-2 p-2.5 rounded-xs bg-graphite/40 border border-graphite-border/60 cursor-pointer hover:bg-graphite min-h-[44px]"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={Boolean(selectedFindingCheckboxes[f.id])}
+                            onChange={(e) =>
+                              setSelectedFindingCheckboxes({
+                                ...selectedFindingCheckboxes,
+                                [f.id]: e.target.checked,
+                              })
+                            }
+                            className="mt-1 rounded-xs accent-accent-gold"
+                          />
+                          <div className="space-y-0.5">
+                            <span className="text-warm-white font-medium block">
+                              {f.recommendation || f.finding}
+                            </span>
+                            <span className="text-[10px] text-muted-dark block">
+                              {f.category} ({f.component || 'Component'}) · Priority: {f.priority || 'NORMAL'}
+                            </span>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
-            </form>
-          </div>
-        </div>
+            )}
+
+            {/* Service Advisor */}
+            <div className="space-y-1">
+              <label className="text-muted uppercase block text-[10px]">Service Advisor *</label>
+              <input
+                type="text"
+                required
+                value={advisorInput}
+                onChange={(e) => setAdvisorInput(e.target.value)}
+                className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+              />
+            </div>
+          </form>
+        </MobileFormSheet>
       )}
 
       {/* ============================================================ */}
       {/* MODAL 2: + ADD LINE ITEM                                     */}
       {/* ============================================================ */}
-      {addItemModalOpen && (
-        <div className="fixed inset-0 z-50 bg-obsidian/85 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-graphite border border-accent-gold/40 rounded-xs p-6 max-w-md w-full space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-accent-gold block font-bold">
-                  SCOPE SPECIFICATION
-                </span>
-                <h3 className="text-base font-bold text-warm-white uppercase">
-                  + Add Line Item
-                </h3>
+      <MobileFormSheet
+        isOpen={addItemModalOpen}
+        onClose={() => setAddItemModalOpen(false)}
+        title="+ Add Line Item"
+        eyebrow="SCOPE SPECIFICATION"
+        maxWidth="max-w-lg"
+        footer={
+          <div className="flex gap-2 w-full font-mono text-xs">
+            <button
+              type="button"
+              onClick={() => setAddItemModalOpen(false)}
+              className="flex-1 min-h-[44px] py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs uppercase font-bold"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="add-line-item-form"
+              className="flex-1 min-h-[44px] py-2.5 px-3 bg-accent-gold text-obsidian font-bold rounded-xs uppercase hover:bg-white"
+            >
+              Add Item
+            </button>
+          </div>
+        }
+      >
+        <form id="add-line-item-form" onSubmit={handleCreateNewItem} className="space-y-4 font-mono text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-muted uppercase block text-[10px] font-bold">Type *</label>
+              <div className="relative">
+                <select
+                  value={itemType}
+                  onChange={(e) => setItemType(e.target.value as EstimateItemType)}
+                  className="w-full min-h-[44px] bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white appearance-none pr-10 focus:border-accent-gold focus:outline-none"
+                >
+                  <option value="Labour">Labour</option>
+                  <option value="Parts">Parts</option>
+                  <option value="Consumables">Consumables</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                  </svg>
+                </div>
               </div>
-              <button
-                onClick={() => setAddItemModalOpen(false)}
-                className="text-muted hover:text-warm-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
             </div>
 
-            <form onSubmit={handleCreateNewItem} className="space-y-3 font-mono text-xs">
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <label className="text-muted uppercase block text-[10px]">Type *</label>
-                  <select
-                    value={itemType}
-                    onChange={(e) => setItemType(e.target.value as EstimateItemType)}
-                    className="w-full bg-obsidian border border-graphite-border rounded-xs px-2.5 py-2 text-xs text-warm-white"
-                  >
-                    <option value="Labour">Labour</option>
-                    <option value="Parts">Parts</option>
-                    <option value="Consumables">Consumables</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-muted uppercase block text-[10px]">Category</label>
-                  <input
-                    type="text"
-                    value={itemCategory}
-                    onChange={(e) => setItemCategory(e.target.value)}
-                    className="w-full bg-obsidian border border-graphite-border rounded-xs px-2.5 py-2 text-xs text-warm-white"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-muted uppercase block text-[10px]">Description *</label>
-                <input
-                  type="text"
-                  required
-                  value={itemDesc}
-                  onChange={(e) => setItemDesc(e.target.value)}
-                  placeholder="e.g. Front Brake Pad Replacement"
-                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white"
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                <div className="space-y-1">
-                  <label className="text-muted uppercase block text-[10px]">Qty *</label>
-                  <input
-                    type="number"
-                    min="1"
-                    required
-                    value={itemQty}
-                    onChange={(e) => setItemQty(Number(e.target.value))}
-                    className="w-full bg-obsidian border border-graphite-border rounded-xs px-2.5 py-2 text-xs text-warm-white text-center"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-muted uppercase block text-[10px]">Unit</label>
-                  <input
-                    type="text"
-                    value={itemUnit}
-                    onChange={(e) => setItemUnit(e.target.value)}
-                    placeholder="job/set"
-                    className="w-full bg-obsidian border border-graphite-border rounded-xs px-2.5 py-2 text-xs text-warm-white text-center"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-muted uppercase block text-[10px]">Rate (₹) *</label>
-                  <input
-                    type="number"
-                    required
-                    step="100"
-                    value={itemUnitPrice}
-                    onChange={(e) => setItemUnitPrice(Number(e.target.value))}
-                    className="w-full bg-obsidian border border-graphite-border rounded-xs px-2.5 py-2 text-xs text-warm-white text-right"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-muted uppercase block text-[10px]">Internal Note (Staff Only)</label>
-                <input
-                  type="text"
-                  value={itemInternalNote}
-                  onChange={(e) => setItemInternalNote(e.target.value)}
-                  placeholder="Visible only to workshop staff"
-                  className="w-full bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white"
-                />
-              </div>
-
-              <div className="flex items-center gap-2 pt-1">
-                <input
-                  type="checkbox"
-                  id="cust_vis"
-                  checked={itemCustomerVisible}
-                  onChange={(e) => setItemCustomerVisible(e.target.checked)}
-                  className="rounded-xs accent-accent-gold"
-                />
-                <label htmlFor="cust_vis" className="text-muted text-[11px] cursor-pointer">
-                  Customer Visible on Quote Portal
-                </label>
-              </div>
-
-              <div className="flex gap-2 pt-3 border-t border-graphite-border">
-                <button
-                  type="button"
-                  onClick={() => setAddItemModalOpen(false)}
-                  className="flex-1 py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs text-xs uppercase"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-2.5 px-3 bg-accent-gold text-obsidian font-bold rounded-xs text-xs uppercase hover:bg-white"
-                >
-                  Add Item
-                </button>
-              </div>
-            </form>
+            <div className="space-y-1.5">
+              <label className="text-muted uppercase block text-[10px] font-bold">Category</label>
+              <input
+                type="text"
+                value={itemCategory}
+                onChange={(e) => setItemCategory(e.target.value)}
+                placeholder="e.g. Brakes / Suspension"
+                className="w-full min-h-[44px] bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:border-accent-gold focus:outline-none"
+              />
+            </div>
           </div>
-        </div>
-      )}
+
+          <div className="space-y-1.5">
+            <label className="text-muted uppercase block text-[10px] font-bold">Description *</label>
+            <input
+              type="text"
+              required
+              value={itemDesc}
+              onChange={(e) => setItemDesc(e.target.value)}
+              placeholder="e.g. Front Brake Pad Replacement"
+              className="w-full min-h-[44px] bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:border-accent-gold focus:outline-none"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-muted uppercase block text-[10px] font-bold">Qty *</label>
+              <input
+                type="number"
+                min="1"
+                required
+                value={itemQty}
+                onChange={(e) => setItemQty(Number(e.target.value))}
+                className="w-full min-h-[44px] bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white text-center focus:border-accent-gold focus:outline-none"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-muted uppercase block text-[10px] font-bold">Unit</label>
+              <input
+                type="text"
+                value={itemUnit}
+                onChange={(e) => setItemUnit(e.target.value)}
+                placeholder="job/set"
+                className="w-full min-h-[44px] bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white text-center focus:border-accent-gold focus:outline-none"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-muted uppercase block text-[10px] font-bold">Rate (₹) *</label>
+              <input
+                type="number"
+                required
+                step="100"
+                value={itemUnitPrice}
+                onChange={(e) => setItemUnitPrice(Number(e.target.value))}
+                className="w-full min-h-[44px] bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white text-right focus:border-accent-gold focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-muted uppercase block text-[10px] font-bold">Internal Note (Staff Only)</label>
+            <input
+              type="text"
+              value={itemInternalNote}
+              onChange={(e) => setItemInternalNote(e.target.value)}
+              placeholder="Visible only to workshop staff"
+              className="w-full min-h-[44px] bg-obsidian border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:border-accent-gold focus:outline-none"
+            />
+          </div>
+
+          <div className="flex items-center gap-3 pt-2">
+            <input
+              type="checkbox"
+              id="cust_vis"
+              checked={itemCustomerVisible}
+              onChange={(e) => setItemCustomerVisible(e.target.checked)}
+              className="w-4 h-4 rounded-xs accent-accent-gold cursor-pointer"
+            />
+            <label htmlFor="cust_vis" className="text-muted text-xs cursor-pointer select-none">
+              Customer Visible on Quote Portal
+            </label>
+          </div>
+        </form>
+      </MobileFormSheet>
 
       {/* ============================================================ */}
       {/* MODAL 3: AUTHORIZE APPROVED WORK CONFIRMATION                */}
       {/* ============================================================ */}
-      {authorizeModalOpen && activeEstimate && (
-        <div className="fixed inset-0 z-50 bg-obsidian/85 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-graphite border border-emerald-500/50 rounded-xs p-6 max-w-md w-full space-y-5 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 block font-bold">
-                  AUTHORIZE APPROVED WORK
-                </span>
-                <h3 className="text-base font-bold text-warm-white uppercase">
-                  Transfer to Workshop Execution
-                </h3>
-              </div>
-              <button
-                onClick={() => setAuthorizeModalOpen(false)}
-                className="text-muted hover:text-warm-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3 font-mono text-xs">
-              <p className="text-muted text-[11px]">
-                This action authorizes the customer-approved scope for physical workshop execution on Job Card{' '}
-                <strong className="text-warm-white">{activeEstimate.job_card_id || activeEstimate.job_id}</strong>.
-              </p>
-
-              <div className="p-3 rounded-xs bg-obsidian border border-graphite-border space-y-1.5">
-                <div className="flex justify-between text-muted">
-                  <span>Customer:</span>
-                  <span className="text-warm-white font-bold">{activeEstimate.customer_name}</span>
-                </div>
-                <div className="flex justify-between text-muted">
-                  <span>Vehicle:</span>
-                  <span className="text-warm-white font-bold">{activeEstimate.vehicle_summary}</span>
-                </div>
-                <div className="flex justify-between text-muted">
-                  <span>Approved Line Items:</span>
-                  <span className="text-emerald-400 font-bold">
-                    {activeEstimate.items.filter((i) => i.approval_status === 'APPROVED').length} items
-                  </span>
-                </div>
-                <div className="flex justify-between text-muted pt-1 border-t border-graphite-border">
-                  <span>Authorized Value:</span>
-                  <span className="text-accent-gold font-bold text-sm">
-                    ₹{(activeEstimate.approved_total || activeEstimate.total).toLocaleString()}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-2 pt-3 border-t border-graphite-border font-mono text-xs">
+      {activeEstimate && (
+        <MobileFormSheet
+          isOpen={authorizeModalOpen}
+          onClose={() => setAuthorizeModalOpen(false)}
+          title="Transfer to Workshop Execution"
+          eyebrow="AUTHORIZE APPROVED WORK"
+          maxWidth="max-w-md"
+          footer={
+            <div className="flex gap-2 w-full font-mono text-xs">
               <button
                 type="button"
                 onClick={() => setAuthorizeModalOpen(false)}
-                className="flex-1 py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs uppercase"
+                className="flex-1 min-h-[44px] py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs uppercase font-bold"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleConfirmAuthorization}
-                className="flex-1 py-2.5 px-3 bg-emerald-500 text-obsidian font-bold rounded-xs uppercase hover:bg-emerald-400"
+                className="flex-1 min-h-[44px] py-2.5 px-3 bg-emerald-500 text-obsidian font-bold rounded-xs uppercase hover:bg-emerald-400"
               >
                 Authorize Work →
               </button>
             </div>
+          }
+        >
+          <div className="space-y-4 font-mono text-xs">
+            <p className="text-muted text-xs leading-relaxed">
+              This action authorizes the customer-approved scope for physical workshop execution on Job Card{' '}
+              <strong className="text-warm-white">{activeEstimate.job_card_id || activeEstimate.job_id}</strong>.
+            </p>
+
+            <div className="p-3.5 rounded-xs bg-obsidian border border-graphite-border space-y-2">
+              <div className="flex justify-between text-muted text-xs">
+                <span>Customer:</span>
+                <span className="text-warm-white font-bold">{activeEstimate.customer_name}</span>
+              </div>
+              <div className="flex justify-between text-muted text-xs">
+                <span>Vehicle:</span>
+                <span className="text-warm-white font-bold">{activeEstimate.vehicle_summary}</span>
+              </div>
+              <div className="flex justify-between text-muted text-xs">
+                <span>Approved Line Items:</span>
+                <span className="text-emerald-400 font-bold">
+                  {activeEstimate.items.filter((i) => i.approval_status === 'APPROVED').length} items
+                </span>
+              </div>
+              <div className="flex justify-between text-muted pt-2 border-t border-graphite-border text-xs">
+                <span>Authorized Value:</span>
+                <span className="text-accent-gold font-bold text-sm">
+                  ₹{(activeEstimate.approved_total || activeEstimate.total).toLocaleString()}
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
+        </MobileFormSheet>
       )}
 
       {/* ============================================================ */}
       {/* MODAL 4: REVISE ESTIMATE REASON                              */}
       {/* ============================================================ */}
-      {revisionModalOpen && activeEstimate && (
-        <div className="fixed inset-0 z-50 bg-obsidian/85 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-graphite border border-accent-gold/40 rounded-xs p-6 max-w-md w-full space-y-5 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-accent-gold block font-bold">
-                  COMMERCIAL REVISION
-                </span>
-                <h3 className="text-base font-bold text-warm-white uppercase">
-                  Create Revision {(activeEstimate.revision_number || 1) + 1}
-                </h3>
-              </div>
+      {activeEstimate && (
+        <MobileFormSheet
+          isOpen={revisionModalOpen}
+          onClose={() => setRevisionModalOpen(false)}
+          title={`Create Revision ${(activeEstimate.revision_number || 1) + 1}`}
+          eyebrow="COMMERCIAL REVISION"
+          maxWidth="max-w-md"
+          footer={
+            <div className="flex gap-2 w-full font-mono text-xs">
               <button
+                type="button"
                 onClick={() => setRevisionModalOpen(false)}
-                className="text-muted hover:text-warm-white"
+                className="flex-1 min-h-[44px] py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs uppercase font-bold"
               >
-                <X className="w-4 h-4" />
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="revision-form"
+                className="flex-1 min-h-[44px] py-2.5 px-3 bg-accent-gold text-obsidian font-bold rounded-xs uppercase hover:bg-white"
+              >
+                Create Revision
               </button>
             </div>
+          }
+        >
+          <form id="revision-form" onSubmit={handleSubmitRevision} className="space-y-4 font-mono text-xs">
+            <p className="text-muted text-xs leading-relaxed">
+              Creating a revision preserves prior audit history and unlocks the scope editor for adjustment.
+            </p>
 
-            <form onSubmit={handleSubmitRevision} className="space-y-3 font-mono text-xs">
-              <p className="text-muted text-[11px]">
-                Creating a revision preserves prior audit history and unlocks the scope editor for adjustment.
-              </p>
-
-              <div className="space-y-1">
-                <label className="text-muted uppercase block text-[10px]">Reason for Revision *</label>
-                <textarea
-                  rows={3}
-                  required
-                  value={revisionReason}
-                  onChange={(e) => setRevisionReason(e.target.value)}
-                  placeholder="e.g. Customer requested removing rear brake discs; revised labour quotation."
-                  className="w-full bg-obsidian border border-graphite-border rounded-xs p-3 text-xs font-mono text-warm-white"
-                />
-              </div>
-
-              <div className="flex gap-2 pt-3 border-t border-graphite-border">
-                <button
-                  type="button"
-                  onClick={() => setRevisionModalOpen(false)}
-                  className="flex-1 py-2.5 px-3 bg-graphite border border-graphite-border text-warm-white rounded-xs uppercase"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-2.5 px-3 bg-accent-gold text-obsidian font-bold rounded-xs uppercase hover:bg-white"
-                >
-                  Create Revision
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+            <div className="space-y-1.5">
+              <label className="text-muted uppercase block text-[10px] font-bold">Reason for Revision *</label>
+              <textarea
+                rows={3}
+                required
+                value={revisionReason}
+                onChange={(e) => setRevisionReason(e.target.value)}
+                placeholder="e.g. Customer requested removing rear brake discs; revised labour quotation."
+                className="w-full bg-obsidian border border-graphite-border rounded-xs p-3 text-xs font-mono text-warm-white focus:border-accent-gold focus:outline-none"
+              />
+            </div>
+          </form>
+        </MobileFormSheet>
       )}
     </div>
   );

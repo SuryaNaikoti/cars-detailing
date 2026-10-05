@@ -12,7 +12,6 @@ import {
   Calendar,
   ChevronRight,
   Plus,
-  X,
   Phone,
   MessageSquare,
   ChevronLeft,
@@ -22,6 +21,7 @@ import {
   CheckCircle2,
   FileCheck2,
 } from 'lucide-react';
+import { MobileFormSheet } from '../../components/ui/MobileFormSheet';
 
 export interface LeadsViewProps {
   leads: LeadRecord[];
@@ -1420,30 +1420,30 @@ export const LeadsView: React.FC<LeadsViewProps> = ({
       {/* ============================================================ */}
       {/* 5. CONVERT TO APPOINTMENT MODAL */}
       {/* ============================================================ */}
+      {/* ============================================================ */}
+      {/* 5. CONVERT TO APPOINTMENT MODAL */}
+      {/* ============================================================ */}
       {convertModalOpen && selectedLead && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-xs">
-          <div className="bg-obsidian border border-graphite-border p-5 sm:p-6 rounded-xs max-w-md w-full space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <h4 className="text-sm font-bold uppercase text-warm-white font-mono">
-                Schedule Workshop Appointment
-              </h4>
-              <button
-                onClick={() => setConvertModalOpen(false)}
-                className="text-muted hover:text-warm-white min-h-[36px] min-w-[36px] flex items-center justify-center"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+        <MobileFormSheet
+          isOpen={convertModalOpen}
+          onClose={() => setConvertModalOpen(false)}
+          eyebrow="LEAD CONVERSION"
+          title="SCHEDULE APPOINTMENT"
+          primaryActionLabel="Confirm Appointment"
+          onPrimaryAction={handleConvertSubmit}
+          primaryActionVariant="gold"
+          maxWidthClass="sm:max-w-md"
+        >
+          <div className="space-y-4 text-xs">
+            <p className="text-muted">
+              Scheduling workshop intake for{' '}
+              <strong className="text-warm-white">
+                {selectedLead.customer_name}
+              </strong>{' '}
+              ({selectedLead.vehicle_summary}).
+            </p>
 
-            <div className="space-y-3 text-xs">
-              <p className="text-muted">
-                Scheduling workshop intake for{' '}
-                <strong className="text-warm-white">
-                  {selectedLead.customer_name}
-                </strong>{' '}
-                ({selectedLead.vehicle_summary}).
-              </p>
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
                   Requested Date *
@@ -1452,7 +1452,7 @@ export const LeadsView: React.FC<LeadsViewProps> = ({
                   type="date"
                   value={convertDate}
                   onChange={(e) => setConvertDate(e.target.value)}
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                 />
               </div>
 
@@ -1464,96 +1464,82 @@ export const LeadsView: React.FC<LeadsViewProps> = ({
                   type="time"
                   value={convertTime}
                   onChange={(e) => setConvertTime(e.target.value)}
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                 />
               </div>
+            </div>
 
-              <div>
-                <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
-                  Service Advisor
-                </label>
+            <div>
+              <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
+                Service Advisor
+              </label>
+              <div className="relative">
                 <select
                   value={convertAdvisor}
                   onChange={(e) => setConvertAdvisor(e.target.value)}
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                  className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                 >
                   <option value="Rohan Deshmukh">Rohan Deshmukh</option>
                   <option value="Pooja Varma">Pooja Varma</option>
                 </select>
-              </div>
-
-              <div className="p-3 bg-graphite/40 border border-graphite-border rounded-xs space-y-1 text-[11px] text-muted font-mono">
-                <span className="text-accent-gold uppercase block font-bold">
-                  Canonical Lineage Record
-                </span>
-                <p>Lead ID: {selectedLead.id}</p>
-                <p>Registration: {selectedLead.registration || 'NOT RECORDED'}</p>
-                <p>Service: {selectedLead.service_requested}</p>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-graphite-border flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setConvertModalOpen(false)}
-                className="px-4 py-2 min-h-[44px] bg-graphite text-muted hover:text-warm-white rounded-xs text-xs font-mono uppercase"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleConvertSubmit}
-                className="px-4 py-2 min-h-[44px] bg-accent-gold text-obsidian font-bold rounded-xs text-xs font-mono uppercase hover:bg-white transition-colors"
-              >
-                Confirm Appointment
-              </button>
+            <div className="p-3 bg-graphite/40 border border-graphite-border rounded-xs space-y-1 text-[11px] text-muted font-mono">
+              <span className="text-accent-gold uppercase block font-bold">
+                Canonical Lineage Record
+              </span>
+              <p>Lead ID: {selectedLead.id}</p>
+              <p>Registration: {selectedLead.registration || 'NOT RECORDED'}</p>
+              <p>Service: {selectedLead.service_requested}</p>
             </div>
           </div>
-        </div>
+        </MobileFormSheet>
       )}
 
       {/* ============================================================ */}
       {/* 6. MARK LOST LEAD MODAL */}
       {/* ============================================================ */}
       {lostModalOpen && selectedLead && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-xs">
+        <MobileFormSheet
+          isOpen={lostModalOpen}
+          onClose={() => setLostModalOpen(false)}
+          eyebrow="PIPELINE STATUS"
+          title="RECORD LOST OPPORTUNITY"
+          primaryActionLabel="Mark as Lost"
+          onPrimaryAction={() => {
+            const form = document.getElementById('lost-lead-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionVariant="danger"
+          maxWidthClass="sm:max-w-md"
+        >
           <form
+            id="lost-lead-form"
             onSubmit={handleConfirmLost}
-            className="bg-obsidian border border-red-500/40 p-5 sm:p-6 rounded-xs max-w-md w-full space-y-4 shadow-2xl"
+            className="space-y-4 text-xs"
           >
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-red-400" />
-                <h4 className="text-sm font-bold uppercase text-warm-white font-mono">
-                  Record Lost Opportunity
-                </h4>
-              </div>
-              <button
-                type="button"
-                onClick={() => setLostModalOpen(false)}
-                className="text-muted hover:text-warm-white min-h-[36px] min-w-[36px] flex items-center justify-center"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+            <p className="text-muted leading-relaxed">
+              Please specify the reason why lead{' '}
+              <strong className="text-warm-white">{selectedLead.id}</strong>{' '}
+              was lost. This will remain a permanent historical business record.
+            </p>
 
-            <div className="space-y-3 text-xs">
-              <p className="text-muted">
-                Please specify the reason why lead{' '}
-                <strong className="text-warm-white">{selectedLead.id}</strong>{' '}
-                was lost. This will remain a permanent historical business
-                record.
-              </p>
-
-              <div>
-                <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
-                  Loss Reason *
-                </label>
+            <div>
+              <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
+                Loss Reason *
+              </label>
+              <div className="relative">
                 <select
                   required
                   value={lostReason}
                   onChange={(e) => setLostReason(e.target.value as LostReason)}
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-red-400 min-h-[44px]"
+                  className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-red-400 min-h-[46px]"
                 >
                   {LOST_REASONS.map((r) => (
                     <option key={r.key} value={r.key}>
@@ -1561,64 +1547,53 @@ export const LeadsView: React.FC<LeadsViewProps> = ({
                     </option>
                   ))}
                 </select>
-              </div>
-
-              <div>
-                <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
-                  Additional Notes
-                </label>
-                <textarea
-                  rows={3}
-                  value={lostNotes}
-                  onChange={(e) => setLostNotes(e.target.value)}
-                  placeholder="Record customer comments or competitive quotes..."
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-red-400"
-                />
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-graphite-border flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setLostModalOpen(false)}
-                className="px-4 py-2 min-h-[44px] bg-graphite text-muted hover:text-warm-white rounded-xs text-xs font-mono uppercase"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 min-h-[44px] bg-red-500 text-white font-bold rounded-xs text-xs font-mono uppercase hover:bg-red-400 transition-colors"
-              >
-                Mark as Lost
-              </button>
+            <div>
+              <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
+                Additional Notes
+              </label>
+              <textarea
+                rows={3}
+                value={lostNotes}
+                onChange={(e) => setLostNotes(e.target.value)}
+                placeholder="Record customer comments or competitive quotes..."
+                className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-red-400 min-h-[70px]"
+              />
             </div>
           </form>
-        </div>
+        </MobileFormSheet>
       )}
 
       {/* ============================================================ */}
       {/* 7. NEW LEAD MODAL */}
       {/* ============================================================ */}
       {newLeadModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-xs overflow-y-auto">
+        <MobileFormSheet
+          isOpen={newLeadModalOpen}
+          onClose={() => setNewLeadModalOpen(false)}
+          eyebrow="NEW CUSTOMER INTAKE"
+          title="LOG NEW CUSTOMER ENQUIRY"
+          primaryActionLabel="Create Lead"
+          onPrimaryAction={() => {
+            const form = document.getElementById('new-lead-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionVariant="gold"
+          maxWidthClass="sm:max-w-lg"
+        >
           <form
+            id="new-lead-form"
             onSubmit={handleCreateLead}
-            className="bg-obsidian border border-graphite-border p-5 sm:p-6 rounded-xs max-w-lg w-full space-y-4 shadow-2xl my-8"
+            className="space-y-4 text-xs"
           >
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <h4 className="text-sm font-bold uppercase text-warm-white font-mono">
-                Log New Customer Enquiry
-              </h4>
-              <button
-                type="button"
-                onClick={() => setNewLeadModalOpen(false)}
-                className="text-muted hover:text-warm-white min-h-[36px] min-w-[36px] flex items-center justify-center"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs">
+            <div className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
@@ -1630,7 +1605,7 @@ export const LeadsView: React.FC<LeadsViewProps> = ({
                     placeholder="e.g. Vikramaditya Rao"
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
                 <div>
@@ -1643,7 +1618,7 @@ export const LeadsView: React.FC<LeadsViewProps> = ({
                     placeholder="+91 98XXX XXXXX"
                     value={newPhone}
                     onChange={(e) => setNewPhone(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
               </div>
@@ -1658,7 +1633,7 @@ export const LeadsView: React.FC<LeadsViewProps> = ({
                     placeholder="customer@example.com"
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
                 <div>
@@ -1670,7 +1645,7 @@ export const LeadsView: React.FC<LeadsViewProps> = ({
                     placeholder="e.g. MH 02 ER 4500"
                     value={newReg}
                     onChange={(e) => setNewReg(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono uppercase text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono uppercase text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
               </div>
@@ -1686,24 +1661,31 @@ export const LeadsView: React.FC<LeadsViewProps> = ({
                     placeholder="e.g. 2023 Porsche Macan GTS"
                     value={newVehicle}
                     onChange={(e) => setNewVehicle(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
                 <div>
                   <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
                     Acquisition Source *
                   </label>
-                  <select
-                    value={newSource}
-                    onChange={(e) => setNewSource(e.target.value as LeadSource)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  >
-                    {LEAD_SOURCES.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={newSource}
+                      onChange={(e) => setNewSource(e.target.value as LeadSource)}
+                      className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                    >
+                      {LEAD_SOURCES.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -1718,25 +1700,32 @@ export const LeadsView: React.FC<LeadsViewProps> = ({
                     placeholder="e.g. Periodic Service + Brake Inspection"
                     value={newService}
                     onChange={(e) => setNewService(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
                 <div>
                   <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
                     Priority *
                   </label>
-                  <select
-                    value={newPriority}
-                    onChange={(e) =>
-                      setNewPriority(e.target.value as LeadPriority)
-                    }
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  >
-                    <option value="URGENT">URGENT</option>
-                    <option value="HIGH">HIGH</option>
-                    <option value="MEDIUM">MEDIUM</option>
-                    <option value="LOW">LOW</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={newPriority}
+                      onChange={(e) =>
+                        setNewPriority(e.target.value as LeadPriority)
+                      }
+                      className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                    >
+                      <option value="URGENT">URGENT</option>
+                      <option value="HIGH">HIGH</option>
+                      <option value="MEDIUM">MEDIUM</option>
+                      <option value="LOW">LOW</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -1749,11 +1738,11 @@ export const LeadsView: React.FC<LeadsViewProps> = ({
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Record customer's stated symptoms or requested scope..."
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold"
+                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[64px]"
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-graphite-border/50">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-graphite-border/50">
                 <div>
                   <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
                     Initial Follow-Up Date
@@ -1762,75 +1751,66 @@ export const LeadsView: React.FC<LeadsViewProps> = ({
                     type="date"
                     value={newFollowUpDate}
                     onChange={(e) => setNewFollowUpDate(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
                 <div>
                   <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
                     Assigned Advisor
                   </label>
-                  <select
-                    value={newAdvisor}
-                    onChange={(e) => setNewAdvisor(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  >
-                    <option value="Rohan Deshmukh">Rohan Deshmukh</option>
-                    <option value="Pooja Varma">Pooja Varma</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={newAdvisor}
+                      onChange={(e) => setNewAdvisor(e.target.value)}
+                      className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                    >
+                      <option value="Rohan Deshmukh">Rohan Deshmukh</option>
+                      <option value="Pooja Varma">Pooja Varma</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <div className="pt-3 border-t border-graphite-border flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setNewLeadModalOpen(false)}
-                className="px-4 py-2 min-h-[44px] bg-graphite text-muted hover:text-warm-white rounded-xs text-xs font-mono uppercase"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 min-h-[44px] bg-accent-gold text-obsidian font-bold rounded-xs text-xs font-mono uppercase hover:bg-white transition-colors"
-              >
-                Create Lead
-              </button>
-            </div>
           </form>
-        </div>
+        </MobileFormSheet>
       )}
 
       {/* ============================================================ */}
       {/* 8. RESCHEDULE FOLLOW-UP MODAL */}
       {/* ============================================================ */}
       {followUpModalOpen && selectedLead && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-xs">
+        <MobileFormSheet
+          isOpen={followUpModalOpen}
+          onClose={() => setFollowUpModalOpen(false)}
+          eyebrow="TASK SCHEDULING"
+          title="SCHEDULE LEAD FOLLOW-UP"
+          primaryActionLabel="Save Schedule"
+          onPrimaryAction={() => {
+            const form = document.getElementById('followup-lead-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionVariant="gold"
+          maxWidthClass="sm:max-w-md"
+        >
           <form
+            id="followup-lead-form"
             onSubmit={handleSaveFollowUp}
-            className="bg-obsidian border border-graphite-border p-5 sm:p-6 rounded-xs max-w-md w-full space-y-4 shadow-2xl"
+            className="space-y-4 text-xs"
           >
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <h4 className="text-sm font-bold uppercase text-warm-white font-mono">
-                Schedule Lead Follow-Up
-              </h4>
-              <button
-                type="button"
-                onClick={() => setFollowUpModalOpen(false)}
-                className="text-muted hover:text-warm-white min-h-[36px] min-w-[36px] flex items-center justify-center"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+            <p className="text-muted leading-relaxed">
+              Set an actionable follow-up timestamp for{' '}
+              <strong className="text-warm-white">
+                {selectedLead.customer_name}
+              </strong>{' '}
+              ({selectedLead.vehicle_summary}).
+            </p>
 
-            <div className="space-y-3 text-xs">
-              <p className="text-muted">
-                Set an actionable follow-up timestamp for{' '}
-                <strong className="text-warm-white">
-                  {selectedLead.customer_name}
-                </strong>{' '}
-                ({selectedLead.vehicle_summary}).
-              </p>
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
                   Follow-Up Date *
@@ -1840,7 +1820,7 @@ export const LeadsView: React.FC<LeadsViewProps> = ({
                   required
                   value={editFollowUpDate}
                   onChange={(e) => setEditFollowUpDate(e.target.value)}
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                 />
               </div>
 
@@ -1853,31 +1833,31 @@ export const LeadsView: React.FC<LeadsViewProps> = ({
                   required
                   value={editFollowUpTime}
                   onChange={(e) => setEditFollowUpTime(e.target.value)}
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                 />
-              </div>
-
-              <div className="p-2.5 rounded-xs bg-graphite/30 border border-graphite-border text-[11px] text-muted space-y-1">
-                <span className="font-mono text-[10px] uppercase text-accent-gold block">
-                  Advisor Assignment
-                </span>
-                <p>
-                  Advisor:{' '}
-                  <strong className="text-warm-white">
-                    {selectedLead.assigned_advisor || 'Rohan Deshmukh'}
-                  </strong>
-                </p>
-                <p>
-                  Status:{' '}
-                  <strong className="text-warm-white font-mono">
-                    {selectedLead.status}
-                  </strong>
-                </p>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-graphite-border flex items-center justify-between gap-2">
-              {selectedLead.next_follow_up_at && (
+            <div className="p-3 rounded-xs bg-graphite/30 border border-graphite-border text-[11px] text-muted space-y-1">
+              <span className="font-mono text-[10px] uppercase text-accent-gold block font-semibold">
+                Advisor Assignment
+              </span>
+              <p>
+                Advisor:{' '}
+                <strong className="text-warm-white">
+                  {selectedLead.assigned_advisor || 'Rohan Deshmukh'}
+                </strong>
+              </p>
+              <p>
+                Status:{' '}
+                <strong className="text-warm-white font-mono">
+                  {selectedLead.status}
+                </strong>
+              </p>
+            </div>
+
+            {selectedLead.next_follow_up_at && (
+              <div className="pt-2">
                 <button
                   type="button"
                   onClick={() => {
@@ -1889,29 +1869,14 @@ export const LeadsView: React.FC<LeadsViewProps> = ({
                     setFollowUpModalOpen(false);
                     showNotice('Follow-up schedule cleared.');
                   }}
-                  className="text-[10px] font-mono text-red-400 hover:underline uppercase"
+                  className="text-xs font-mono text-red-400 hover:underline uppercase inline-flex items-center gap-1.5 py-1"
                 >
-                  Clear Follow-Up
-                </button>
-              )}
-              <div className="flex items-center gap-2 ml-auto">
-                <button
-                  type="button"
-                  onClick={() => setFollowUpModalOpen(false)}
-                  className="px-4 py-2 min-h-[44px] bg-graphite text-muted hover:text-warm-white rounded-xs text-xs font-mono uppercase"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 min-h-[44px] bg-accent-gold text-obsidian font-bold rounded-xs text-xs font-mono uppercase hover:bg-white transition-colors"
-                >
-                  Save Schedule
+                  ✕ Clear Existing Follow-Up
                 </button>
               </div>
-            </div>
+            )}
           </form>
-        </div>
+        </MobileFormSheet>
       )}
     </div>
   );

@@ -42,6 +42,7 @@ import {
   AlertCircle,
   ArrowRight,
 } from 'lucide-react';
+import { MobileFormSheet } from '../../components/ui/MobileFormSheet';
 
 export interface JobCardsViewProps {
   jobs: JobCard[];
@@ -2372,36 +2373,29 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
       {/* ============================================================ */}
       {/* 6-STEP NEW JOB CARD WIZARD MODAL */}
       {/* ============================================================ */}
+      {/* ============================================================ */}
+      {/* 6-STEP NEW JOB CARD WIZARD MODAL */}
+      {/* ============================================================ */}
       {newModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+        <MobileFormSheet
+          isOpen={newModalOpen}
+          onClose={() => setNewModalOpen(false)}
+          eyebrow="WORKSHOP OPERATIONS · INTAKE WIZARD"
+          title={`Step ${wizardStep} of 6: ${
+            wizardStep === 1 ? 'Customer' :
+            wizardStep === 2 ? 'Vehicle' :
+            wizardStep === 3 ? 'Service Request' :
+            wizardStep === 4 ? 'Workshop Assignment' :
+            wizardStep === 5 ? 'Promised Delivery' : 'Review & Create'
+          }`}
+          hideFooter
+          maxWidthClass="sm:max-w-xl"
+        >
           <form
+            id="jobcard-wizard-form"
             onSubmit={handleCreateJobCardSubmit}
-            className="bg-obsidian border border-graphite-border p-6 rounded-xs max-w-xl w-full space-y-4 max-h-[90vh] overflow-y-auto"
+            className="space-y-4"
           >
-            <div className="flex items-center justify-between pb-3 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono uppercase text-accent-gold block">
-                  WORKSHOP OPERATIONS · INTAKE WIZARD
-                </span>
-                <h4 className="text-base font-bold uppercase text-warm-white">
-                  Step {wizardStep} of 6: {
-                    wizardStep === 1 ? 'Customer' :
-                    wizardStep === 2 ? 'Vehicle' :
-                    wizardStep === 3 ? 'Service Request' :
-                    wizardStep === 4 ? 'Workshop Assignment' :
-                    wizardStep === 5 ? 'Promised Delivery' : 'Review & Create'
-                  }
-                </h4>
-              </div>
-              <button
-                type="button"
-                onClick={() => setNewModalOpen(false)}
-                className="text-muted hover:text-warm-white min-h-[44px] min-w-[44px] flex items-center justify-center"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
             {/* Step 1: CUSTOMER */}
             {wizardStep === 1 && (
               <div className="space-y-3">
@@ -2409,7 +2403,7 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setCustomerMode('EXISTING')}
-                    className={`py-2 text-xs font-mono font-bold uppercase rounded-xs min-h-[44px] ${
+                    className={`py-2 text-xs font-mono font-bold uppercase rounded-xs min-h-[44px] cursor-pointer ${
                       customerMode === 'EXISTING' ? 'bg-accent-gold text-obsidian' : 'text-muted hover:text-warm-white'
                     }`}
                   >
@@ -2418,7 +2412,7 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setCustomerMode('NEW')}
-                    className={`py-2 text-xs font-mono font-bold uppercase rounded-xs min-h-[44px] ${
+                    className={`py-2 text-xs font-mono font-bold uppercase rounded-xs min-h-[44px] cursor-pointer ${
                       customerMode === 'NEW' ? 'bg-accent-gold text-obsidian' : 'text-muted hover:text-warm-white'
                     }`}
                   >
@@ -2431,20 +2425,27 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                     <label className="text-[10px] font-mono text-muted-dark uppercase block">
                       Select Customer *
                     </label>
-                    <select
-                      value={selectedCustomerId}
-                      onChange={(e) => handleSelectExistingCustomer(e.target.value)}
-                      className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                    >
-                      <option value="">-- Choose from registered customers --</option>
-                      {availableCustomers.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name} ({c.phone})
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={selectedCustomerId}
+                        onChange={(e) => handleSelectExistingCustomer(e.target.value)}
+                        className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                      >
+                        <option value="">-- Choose from registered customers --</option>
+                        {availableCustomers.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name} ({c.phone})
+                          </option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
                     {selectedCustomerId && (
-                      <div className="p-2.5 bg-obsidian rounded-xs border border-graphite-border text-xs font-mono">
+                      <div className="p-3 bg-obsidian rounded-xs border border-graphite-border text-xs font-mono">
                         <p className="text-warm-white font-bold">{custName}</p>
                         <p className="text-muted">{phone}</p>
                         {email && <p className="text-muted-dark">{email}</p>}
@@ -2462,7 +2463,7 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                         value={custName}
                         onChange={(e) => setCustName(e.target.value)}
                         placeholder="e.g. Sameer Verma"
-                        className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                        className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                       />
                     </div>
                     <div>
@@ -2474,7 +2475,7 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="+91 98201 12345"
-                        className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                        className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                       />
                     </div>
                     <div>
@@ -2486,7 +2487,7 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="sameer@example.com"
-                        className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                        className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                       />
                     </div>
                   </div>
@@ -2501,7 +2502,7 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setVehicleMode('EXISTING')}
-                    className={`py-2 text-xs font-mono font-bold uppercase rounded-xs min-h-[44px] ${
+                    className={`py-2 text-xs font-mono font-bold uppercase rounded-xs min-h-[44px] cursor-pointer ${
                       vehicleMode === 'EXISTING' ? 'bg-accent-gold text-obsidian' : 'text-muted hover:text-warm-white'
                     }`}
                   >
@@ -2510,7 +2511,7 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setVehicleMode('NEW')}
-                    className={`py-2 text-xs font-mono font-bold uppercase rounded-xs min-h-[44px] ${
+                    className={`py-2 text-xs font-mono font-bold uppercase rounded-xs min-h-[44px] cursor-pointer ${
                       vehicleMode === 'NEW' ? 'bg-accent-gold text-obsidian' : 'text-muted hover:text-warm-white'
                     }`}
                   >
@@ -2523,20 +2524,27 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                     <label className="text-[10px] font-mono text-muted-dark uppercase block">
                       Select Vehicle *
                     </label>
-                    <select
-                      value={selectedVehicleId}
-                      onChange={(e) => handleSelectExistingVehicle(e.target.value)}
-                      className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                    >
-                      <option value="">-- Choose from garage vehicles --</option>
-                      {availableVehicles.map((v) => (
-                        <option key={v.id} value={v.id}>
-                          {v.year} {v.make} {v.model} ({v.registration})
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={selectedVehicleId}
+                        onChange={(e) => handleSelectExistingVehicle(e.target.value)}
+                        className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                      >
+                        <option value="">-- Choose from garage vehicles --</option>
+                        {availableVehicles.map((v) => (
+                          <option key={v.id} value={v.id}>
+                            {v.year} {v.make} {v.model} ({v.registration})
+                          </option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
                     {selectedVehicleId && (
-                      <div className="p-2.5 bg-obsidian rounded-xs border border-graphite-border text-xs font-mono space-y-1">
+                      <div className="p-3 bg-obsidian rounded-xs border border-graphite-border text-xs font-mono space-y-1">
                         <p className="text-warm-white font-bold">{vehicleSummary}</p>
                         <p className="text-accent-gold">{reg}</p>
                         <p className="text-muted-dark">Odo: {odometer} km</p>
@@ -2554,7 +2562,7 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                         value={vehicleSummary}
                         onChange={(e) => setVehicleSummary(e.target.value)}
                         placeholder="e.g. 2023 Porsche Panamera 4S"
-                        className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                        className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                       />
                     </div>
                     <div>
@@ -2566,10 +2574,10 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                         value={reg}
                         onChange={(e) => setReg(e.target.value)}
                         placeholder="e.g. MH 02 FG 7788"
-                        className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono uppercase text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                        className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono uppercase text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
                           Odometer (km)
@@ -2578,23 +2586,30 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                           type="number"
                           value={odometer}
                           onChange={(e) => setOdometer(e.target.value === '' ? '' : Number(e.target.value))}
-                          className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                          className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                         />
                       </div>
                       <div>
                         <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
                           Fuel Level
                         </label>
-                        <select
-                          value={fuelLevel}
-                          onChange={(e) => setFuelLevel(e.target.value)}
-                          className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                        >
-                          <option value="25%">25% (1/4 Tank)</option>
-                          <option value="50%">50% (1/2 Tank)</option>
-                          <option value="75%">75% (3/4 Tank)</option>
-                          <option value="100%">100% (Full)</option>
-                        </select>
+                        <div className="relative">
+                          <select
+                            value={fuelLevel}
+                            onChange={(e) => setFuelLevel(e.target.value)}
+                            className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                          >
+                            <option value="25%">25% (1/4 Tank)</option>
+                            <option value="50%">50% (1/2 Tank)</option>
+                            <option value="75%">75% (3/4 Tank)</option>
+                            <option value="100%">100% (Full)</option>
+                          </select>
+                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -2613,7 +2628,7 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                     type="text"
                     value={service}
                     onChange={(e) => setService(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
                 <div>
@@ -2625,24 +2640,31 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                     value={complaint}
                     onChange={(e) => setComplaint(e.target.value)}
                     placeholder="Describe specific symptoms or requests..."
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[70px]"
                   />
                 </div>
                 <div>
                   <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
                     Operational Priority
                   </label>
-                  <select
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value as JobPriority)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  >
-                    {PRIORITIES.map((p) => (
-                      <option key={p} value={p}>
-                        {p}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={priority}
+                      onChange={(e) => setPriority(e.target.value as JobPriority)}
+                      className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                    >
+                      {PRIORITIES.map((p) => (
+                        <option key={p} value={p}>
+                          {p}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -2654,53 +2676,74 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                   <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
                     Assigned Lead Technician
                   </label>
-                  <select
-                    value={technician}
-                    onChange={(e) => setTechnician(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  >
-                    {availableTechnicians.map((t) => (
-                      <option key={t.id} value={t.name}>
-                        {t.name} — {t.specialization}
-                      </option>
-                    ))}
-                    <option value="Unassigned">Unassigned</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={technician}
+                      onChange={(e) => setTechnician(e.target.value)}
+                      className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                    >
+                      {availableTechnicians.map((t) => (
+                        <option key={t.id} value={t.name}>
+                          {t.name} — {t.specialization}
+                        </option>
+                      ))}
+                      <option value="Unassigned">Unassigned</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
                   <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
                     Workshop Bay
                   </label>
-                  <select
-                    value={bay}
-                    onChange={(e) => setBay(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  >
-                    {STANDARD_BAYS.map((b) => (
-                      <option key={b} value={b}>
-                        {b}
-                      </option>
-                    ))}
-                    <option value="UNASSIGNED">UNASSIGNED</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={bay}
+                      onChange={(e) => setBay(e.target.value)}
+                      className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                    >
+                      {STANDARD_BAYS.map((b) => (
+                        <option key={b} value={b}>
+                          {b}
+                        </option>
+                      ))}
+                      <option value="UNASSIGNED">UNASSIGNED</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
                   <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
                     Service Advisor
                   </label>
-                  <select
-                    value={advisor}
-                    onChange={(e) => setAdvisor(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  >
-                    {ADVISORS.map((a) => (
-                      <option key={a} value={a}>
-                        {a}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={advisor}
+                      onChange={(e) => setAdvisor(e.target.value)}
+                      className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                    >
+                      {ADVISORS.map((a) => (
+                        <option key={a} value={a}>
+                          {a}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -2712,17 +2755,24 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                   <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
                     Turnaround Duration (Hours)
                   </label>
-                  <select
-                    value={promisedHours}
-                    onChange={(e) => setPromisedHours(Number(e.target.value))}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
-                  >
-                    <option value={4}>4 Hours (Fast Track)</option>
-                    <option value={6}>6 Hours (Standard Service)</option>
-                    <option value={8}>8 Hours (Full Day)</option>
-                    <option value={24}>24 Hours (Next Day)</option>
-                    <option value={48}>48 Hours (Major Overhaul)</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={promisedHours}
+                      onChange={(e) => setPromisedHours(Number(e.target.value))}
+                      className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
+                    >
+                      <option value={4}>4 Hours (Fast Track)</option>
+                      <option value={6}>6 Hours (Standard Service)</option>
+                      <option value={8}>8 Hours (Full Day)</option>
+                      <option value={24}>24 Hours (Next Day)</option>
+                      <option value={48}>48 Hours (Major Overhaul)</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
@@ -2733,7 +2783,7 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                     type="datetime-local"
                     value={customPromisedDate}
                     onChange={(e) => setCustomPromisedDate(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[44px]"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs font-mono text-warm-white focus:outline-none focus:border-accent-gold min-h-[46px]"
                   />
                 </div>
 
@@ -2746,7 +2796,7 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                     value={internalNotes}
                     onChange={(e) => setInternalNotes(e.target.value)}
                     placeholder="Valuables inventory, preliminary exterior observations..."
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold"
+                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white focus:outline-none focus:border-accent-gold min-h-[64px]"
                   />
                 </div>
               </div>
@@ -2788,13 +2838,13 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
               </div>
             )}
 
-            {/* Wizard Navigation Footer */}
-            <div className="pt-3 border-t border-graphite-border flex items-center justify-between">
+            {/* Wizard Navigation Sticky-Safe Action Row */}
+            <div className="pt-4 border-t border-graphite-border flex items-center justify-between gap-2">
               {wizardStep > 1 ? (
                 <button
                   type="button"
                   onClick={() => setWizardStep(wizardStep - 1)}
-                  className="px-4 py-2 bg-graphite border border-graphite-border text-warm-white text-xs font-mono uppercase min-h-[44px]"
+                  className="px-4 py-2 bg-graphite border border-graphite-border text-warm-white text-xs font-mono uppercase min-h-[46px] cursor-pointer"
                 >
                   ← Previous
                 </button>
@@ -2802,7 +2852,7 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setNewModalOpen(false)}
-                  className="px-4 py-2 bg-graphite text-muted text-xs font-mono uppercase min-h-[44px]"
+                  className="px-4 py-2 bg-graphite text-muted text-xs font-mono uppercase min-h-[46px] cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -2822,54 +2872,54 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                     }
                     setWizardStep(wizardStep + 1);
                   }}
-                  className="px-4 py-2 bg-accent-gold text-obsidian font-bold text-xs font-mono uppercase hover:bg-white min-h-[44px]"
+                  className="px-5 py-2 bg-accent-gold text-obsidian font-bold text-xs font-mono uppercase hover:bg-white min-h-[46px] cursor-pointer"
                 >
                   Next Step →
                 </button>
               ) : (
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-accent-gold text-obsidian font-bold text-xs font-mono uppercase hover:bg-white min-h-[44px]"
+                  className="px-5 py-2 bg-accent-gold text-obsidian font-bold text-xs font-mono uppercase hover:bg-white min-h-[46px] cursor-pointer"
                 >
                   CREATE JOB CARD
                 </button>
               )}
             </div>
           </form>
-        </div>
+        </MobileFormSheet>
       )}
 
       {/* ============================================================ */}
       {/* MODAL 2: REASSIGN TECHNICIAN MODAL */}
       {/* ============================================================ */}
       {reassignTechModalOpen && activeJob && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+        <MobileFormSheet
+          isOpen={reassignTechModalOpen}
+          onClose={() => setReassignTechModalOpen(false)}
+          eyebrow="WORKSHOP FLOOR DISPATCH"
+          title={`REASSIGN TECHNICIAN · ${activeJob.id}`}
+          primaryActionLabel="Save Assignment"
+          onPrimaryAction={() => {
+            const form = document.getElementById('reassign-tech-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionVariant="gold"
+          maxWidthClass="sm:max-w-md"
+        >
           <form
+            id="reassign-tech-form"
             onSubmit={handleReassignTechSubmit}
-            className="bg-obsidian border border-graphite-border p-5 rounded-xs max-w-sm w-full space-y-4"
+            className="space-y-4 text-xs font-mono"
           >
-            <div className="flex items-center justify-between pb-2 border-b border-graphite-border">
-              <h4 className="text-xs font-mono font-bold uppercase text-warm-white">
-                Reassign Lead Technician · {activeJob.id}
-              </h4>
-              <button
-                type="button"
-                onClick={() => setReassignTechModalOpen(false)}
-                className="text-muted hover:text-warm-white min-h-[44px] min-w-[44px] flex items-center justify-center"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs font-mono">
-              <div>
-                <label className="text-[10px] text-muted-dark uppercase block mb-1">
-                  Select Technician *
-                </label>
+            <div>
+              <label className="text-[10px] text-muted-dark uppercase block mb-1">
+                Select Technician *
+              </label>
+              <div className="relative">
                 <select
                   value={targetTechSelection}
                   onChange={(e) => setTargetTechSelection(e.target.value)}
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white font-mono min-h-[44px]"
+                  className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs text-warm-white font-mono min-h-[46px]"
                   required
                 >
                   <option value="">-- Choose technician --</option>
@@ -2880,72 +2930,61 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                   ))}
                   <option value="Unassigned">Unassigned</option>
                 </select>
-              </div>
-
-              <div>
-                <label className="text-[10px] text-muted-dark uppercase block mb-1">
-                  Reassignment Reason (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={techReassignReason}
-                  onChange={(e) => setTechReassignReason(e.target.value)}
-                  placeholder="e.g. Diagnostic workload balancing"
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white min-h-[44px]"
-                />
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-graphite-border flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setReassignTechModalOpen(false)}
-                className="px-3 py-1.5 bg-graphite text-muted text-xs font-mono uppercase min-h-[44px]"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-1.5 bg-accent-gold text-obsidian font-bold text-xs font-mono uppercase hover:bg-white min-h-[44px]"
-              >
-                Save Assignment
-              </button>
+            <div>
+              <label className="text-[10px] text-muted-dark uppercase block mb-1">
+                Reassignment Reason (Optional)
+              </label>
+              <input
+                type="text"
+                value={techReassignReason}
+                onChange={(e) => setTechReassignReason(e.target.value)}
+                placeholder="e.g. Diagnostic workload balancing"
+                className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white min-h-[46px]"
+              />
             </div>
           </form>
-        </div>
+        </MobileFormSheet>
       )}
 
       {/* ============================================================ */}
       {/* MODAL 3: REASSIGN BAY MODAL */}
       {/* ============================================================ */}
       {reassignBayModalOpen && activeJob && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+        <MobileFormSheet
+          isOpen={reassignBayModalOpen}
+          onClose={() => setReassignBayModalOpen(false)}
+          eyebrow="BAY SCHEDULING"
+          title={`REASSIGN WORKSHOP BAY · ${activeJob.id}`}
+          primaryActionLabel="Save Bay"
+          onPrimaryAction={() => {
+            const form = document.getElementById('reassign-bay-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionVariant="gold"
+          maxWidthClass="sm:max-w-md"
+        >
           <form
+            id="reassign-bay-form"
             onSubmit={handleReassignBaySubmit}
-            className="bg-obsidian border border-graphite-border p-5 rounded-xs max-w-sm w-full space-y-4"
+            className="space-y-4 text-xs font-mono"
           >
-            <div className="flex items-center justify-between pb-2 border-b border-graphite-border">
-              <h4 className="text-xs font-mono font-bold uppercase text-warm-white">
-                Reassign Workshop Bay · {activeJob.id}
-              </h4>
-              <button
-                type="button"
-                onClick={() => setReassignBayModalOpen(false)}
-                className="text-muted hover:text-warm-white min-h-[44px] min-w-[44px] flex items-center justify-center"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs font-mono">
-              <div>
-                <label className="text-[10px] text-muted-dark uppercase block mb-1">
-                  Select Workshop Bay *
-                </label>
+            <div>
+              <label className="text-[10px] text-muted-dark uppercase block mb-1">
+                Select Workshop Bay *
+              </label>
+              <div className="relative">
                 <select
                   value={targetBaySelection}
                   onChange={(e) => setTargetBaySelection(e.target.value)}
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white font-mono min-h-[44px]"
+                  className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs text-warm-white font-mono min-h-[46px]"
                   required
                 >
                   <option value="BAY 01">BAY 01 (General Service)</option>
@@ -2954,164 +2993,137 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                   <option value="BAY 04">BAY 04 (Heavy Mechanical)</option>
                   <option value="UNASSIGNED">UNASSIGNED (Hold / Staging)</option>
                 </select>
-              </div>
-
-              <div>
-                <label className="text-[10px] text-muted-dark uppercase block mb-1">
-                  Reassignment Reason (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={bayReassignReason}
-                  onChange={(e) => setBayReassignReason(e.target.value)}
-                  placeholder="e.g. Lift equipment allocation"
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white min-h-[44px]"
-                />
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-graphite-border flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setReassignBayModalOpen(false)}
-                className="px-3 py-1.5 bg-graphite text-muted text-xs font-mono uppercase min-h-[44px]"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-1.5 bg-accent-gold text-obsidian font-bold text-xs font-mono uppercase hover:bg-white min-h-[44px]"
-              >
-                Save Bay
-              </button>
+            <div>
+              <label className="text-[10px] text-muted-dark uppercase block mb-1">
+                Reassignment Reason (Optional)
+              </label>
+              <input
+                type="text"
+                value={bayReassignReason}
+                onChange={(e) => setBayReassignReason(e.target.value)}
+                placeholder="e.g. Lift equipment allocation"
+                className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white min-h-[46px]"
+              />
             </div>
           </form>
-        </div>
+        </MobileFormSheet>
       )}
 
       {/* ============================================================ */}
       {/* MODAL 4: PAUSE / WAITING REASON MODAL */}
       {/* ============================================================ */}
       {waitingModalOpen && activeJob && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+        <MobileFormSheet
+          isOpen={waitingModalOpen}
+          onClose={() => setWaitingModalOpen(false)}
+          eyebrow="JOB STATUS OVERRIDE"
+          title="PLACE JOB ON HOLD"
+          primaryActionLabel="Confirm Hold"
+          onPrimaryAction={() => {
+            const form = document.getElementById('waiting-job-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionVariant="gold"
+          maxWidthClass="sm:max-w-md"
+        >
           <form
+            id="waiting-job-form"
             onSubmit={handleWaitingSubmit}
-            className="bg-obsidian border border-graphite-border p-5 rounded-xs max-w-sm w-full space-y-4"
+            className="space-y-4 text-xs"
           >
-            <div className="flex items-center justify-between pb-2 border-b border-graphite-border">
-              <h4 className="text-xs font-mono font-bold uppercase text-amber-400 flex items-center gap-1.5">
-                <AlertTriangle className="w-3.5 h-3.5" /> Place Job on Hold
-              </h4>
-              <button
-                type="button"
-                onClick={() => setWaitingModalOpen(false)}
-                className="text-muted hover:text-warm-white min-h-[44px] min-w-[44px] flex items-center justify-center"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
-                  Hold Reason Category *
-                </label>
+            <div>
+              <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
+                Hold Reason Category *
+              </label>
+              <div className="relative">
                 <select
                   value={waitingReasonInput}
                   onChange={(e) => setWaitingReasonInput(e.target.value)}
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white font-mono min-h-[44px]"
+                  className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs text-warm-white font-mono min-h-[46px]"
                 >
                   <option value="WAITING FOR PARTS">WAITING FOR PARTS</option>
                   <option value="WAITING FOR CUSTOMER APPROVAL">WAITING FOR CUSTOMER APPROVAL</option>
                   <option value="WAITING FOR TECHNICIAN">WAITING FOR TECHNICIAN</option>
                   <option value="WORKSHOP HOLD">WORKSHOP HOLD</option>
                 </select>
-              </div>
-
-              <div>
-                <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
-                  Notes / Part Reference
-                </label>
-                <textarea
-                  rows={2}
-                  value={waitingCustomNote}
-                  onChange={(e) => setWaitingCustomNote(e.target.value)}
-                  placeholder="e.g. Awaiting DHL express delivery of brake disc rotors..."
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white font-mono"
-                />
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-graphite-border flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setWaitingModalOpen(false)}
-                className="px-3 py-1.5 bg-graphite text-muted text-xs font-mono uppercase min-h-[44px]"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-1.5 bg-amber-500 text-obsidian font-bold text-xs font-mono uppercase hover:bg-white min-h-[44px]"
-              >
-                Confirm Hold
-              </button>
+            <div>
+              <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
+                Notes / Part Reference
+              </label>
+              <textarea
+                rows={2}
+                value={waitingCustomNote}
+                onChange={(e) => setWaitingCustomNote(e.target.value)}
+                placeholder="e.g. Awaiting DHL express delivery of brake disc rotors..."
+                className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white font-mono min-h-[64px]"
+              />
             </div>
           </form>
-        </div>
+        </MobileFormSheet>
       )}
 
       {/* ============================================================ */}
       {/* MODAL 5: DELIVERY HANDOVER MODAL */}
       {/* ============================================================ */}
       {deliveryModalOpen && activeJob && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+        <MobileFormSheet
+          isOpen={deliveryModalOpen}
+          onClose={() => setDeliveryModalOpen(false)}
+          eyebrow="VEHICLE HANDOVER"
+          title={`DELIVER JOB ${activeJob.id}`}
+          primaryActionLabel="Confirm Delivery"
+          onPrimaryAction={() => {
+            const form = document.getElementById('delivery-handover-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}
+          primaryActionVariant="emerald"
+          maxWidthClass="sm:max-w-md"
+        >
           <form
+            id="delivery-handover-form"
             onSubmit={handleDeliverySubmit}
-            className="bg-obsidian border border-graphite-border p-5 rounded-xs max-w-md w-full space-y-4"
+            className="space-y-4 text-xs font-mono"
           >
-            <div className="flex items-center justify-between pb-2 border-b border-graphite-border">
-              <div>
-                <span className="text-[10px] font-mono uppercase text-emerald-400 block">
-                  VEHICLE HANDOVER
-                </span>
-                <h4 className="text-sm font-bold uppercase text-warm-white">
-                  Mark Job {activeJob.id} as Delivered
-                </h4>
+            <div className="p-3 bg-graphite/40 border border-graphite-border rounded-xs space-y-1">
+              <div className="flex justify-between text-muted">
+                <span>Customer:</span>
+                <strong className="text-warm-white">{activeJob.customer_name}</strong>
               </div>
-              <button
-                type="button"
-                onClick={() => setDeliveryModalOpen(false)}
-                className="text-muted hover:text-warm-white min-h-[44px] min-w-[44px] flex items-center justify-center"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex justify-between text-muted">
+                <span>Vehicle:</span>
+                <span className="text-warm-white">{activeJob.vehicle_summary}</span>
+              </div>
+              <div className="flex justify-between text-muted">
+                <span>Registration:</span>
+                <strong className="text-accent-gold">{activeJob.registration}</strong>
+              </div>
             </div>
 
-            <div className="space-y-3 text-xs font-mono">
-              <div className="p-3 bg-graphite/40 border border-graphite-border rounded-xs space-y-1">
-                <div className="flex justify-between text-muted">
-                  <span>Customer:</span>
-                  <strong className="text-warm-white">{activeJob.customer_name}</strong>
-                </div>
-                <div className="flex justify-between text-muted">
-                  <span>Vehicle:</span>
-                  <span className="text-warm-white">{activeJob.vehicle_summary}</span>
-                </div>
-                <div className="flex justify-between text-muted">
-                  <span>Registration:</span>
-                  <strong className="text-accent-gold">{activeJob.registration}</strong>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
-                  Delivering Service Advisor *
-                </label>
+            <div>
+              <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
+                Delivering Service Advisor *
+              </label>
+              <div className="relative">
                 <select
                   value={deliveryAdvisorSign}
                   onChange={(e) => setDeliveryAdvisorSign(e.target.value)}
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white font-mono min-h-[44px]"
+                  className="w-full appearance-none bg-graphite border border-graphite-border rounded-xs px-3 py-2 pr-10 text-xs text-warm-white font-mono min-h-[46px]"
                 >
                   {ADVISORS.map((a) => (
                     <option key={a} value={a}>
@@ -3119,153 +3131,142 @@ export const JobCardsView: React.FC<JobCardsViewProps> = ({
                     </option>
                   ))}
                 </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
+            </div>
 
-              <div>
-                <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
-                  Handover Notes *
+            <div>
+              <label className="text-[10px] font-mono text-muted-dark uppercase block mb-1">
+                Handover Notes *
+              </label>
+              <textarea
+                rows={2}
+                required
+                value={deliveryHandoverNotes}
+                onChange={(e) => setDeliveryHandoverNotes(e.target.value)}
+                className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white min-h-[64px]"
+              />
+            </div>
+
+            {/* CF-03: Optional Customer Handover Sign-off */}
+            <div className="pt-2 border-t border-graphite-border/70 space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-mono text-accent-gold uppercase font-bold tracking-wider">
+                  Customer Handover Sign-Off (Optional)
                 </label>
-                <textarea
-                  rows={2}
-                  required
-                  value={deliveryHandoverNotes}
-                  onChange={(e) => setDeliveryHandoverNotes(e.target.value)}
-                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white"
+                <span className="text-[9px] font-mono text-muted-dark">Operational Acknowledgement</span>
+              </div>
+              
+              <div>
+                <input
+                  type="text"
+                  placeholder={`Signee Name (Default: ${activeJob.customer_name})`}
+                  value={customerSignoffName}
+                  onChange={(e) => setCustomerSignoffName(e.target.value)}
+                  className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-2 text-xs text-warm-white font-mono placeholder:text-muted-dark min-h-[44px]"
                 />
               </div>
 
-              {/* CF-03: Optional Customer Handover Sign-off */}
-              <div className="pt-2 border-t border-graphite-border/70 space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-[10px] font-mono text-accent-gold uppercase font-bold tracking-wider">
-                    Customer Handover Sign-Off (Optional)
-                  </label>
-                  <span className="text-[9px] font-mono text-muted-dark">Operational Acknowledgement</span>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-[10px] text-muted-dark font-mono">
+                  <span>Draw Signature Below:</span>
+                  {hasDrawnSignature && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const canvas = signatureCanvasRef.current;
+                        if (canvas) {
+                          const ctx = canvas.getContext('2d');
+                          if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        }
+                        setHasDrawnSignature(false);
+                      }}
+                      className="text-amber-400 hover:text-white underline"
+                    >
+                      Clear Canvas
+                    </button>
+                  )}
                 </div>
-                
-                <div>
-                  <input
-                    type="text"
-                    placeholder={`Signee Name (Default: ${activeJob.customer_name})`}
-                    value={customerSignoffName}
-                    onChange={(e) => setCustomerSignoffName(e.target.value)}
-                    className="w-full bg-graphite border border-graphite-border rounded-xs px-3 py-1.5 text-xs text-warm-white font-mono placeholder:text-muted-dark"
+                <div className="relative border border-graphite-border rounded-xs bg-[#111] overflow-hidden">
+                  <canvas
+                    ref={signatureCanvasRef}
+                    width={380}
+                    height={90}
+                    className="w-full h-[90px] block cursor-crosshair touch-none"
+                    onMouseDown={(e) => {
+                      const canvas = signatureCanvasRef.current;
+                      if (!canvas) return;
+                      const ctx = canvas.getContext('2d');
+                      if (!ctx) return;
+                      setIsDrawing(true);
+                      setHasDrawnSignature(true);
+                      const rect = canvas.getBoundingClientRect();
+                      const scaleX = canvas.width / rect.width;
+                      const scaleY = canvas.height / rect.height;
+                      ctx.beginPath();
+                      ctx.moveTo((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
+                    }}
+                    onMouseMove={(e) => {
+                      if (!isDrawing) return;
+                      const canvas = signatureCanvasRef.current;
+                      if (!canvas) return;
+                      const ctx = canvas.getContext('2d');
+                      if (!ctx) return;
+                      const rect = canvas.getBoundingClientRect();
+                      const scaleX = canvas.width / rect.width;
+                      const scaleY = canvas.height / rect.height;
+                      ctx.strokeStyle = '#D4AF37';
+                      ctx.lineWidth = 2.5;
+                      ctx.lineCap = 'round';
+                      ctx.lineTo((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
+                      ctx.stroke();
+                    }}
+                    onMouseUp={() => setIsDrawing(false)}
+                    onMouseLeave={() => setIsDrawing(false)}
+                    onTouchStart={(e) => {
+                      const canvas = signatureCanvasRef.current;
+                      if (!canvas || !e.touches[0]) return;
+                      const ctx = canvas.getContext('2d');
+                      if (!ctx) return;
+                      setIsDrawing(true);
+                      setHasDrawnSignature(true);
+                      const rect = canvas.getBoundingClientRect();
+                      const scaleX = canvas.width / rect.width;
+                      const scaleY = canvas.height / rect.height;
+                      ctx.beginPath();
+                      ctx.moveTo((e.touches[0].clientX - rect.left) * scaleX, (e.touches[0].clientY - rect.top) * scaleY);
+                    }}
+                    onTouchMove={(e) => {
+                      if (!isDrawing || !e.touches[0]) return;
+                      const canvas = signatureCanvasRef.current;
+                      if (!canvas) return;
+                      const ctx = canvas.getContext('2d');
+                      if (!ctx) return;
+                      const rect = canvas.getBoundingClientRect();
+                      const scaleX = canvas.width / rect.width;
+                      const scaleY = canvas.height / rect.height;
+                      ctx.strokeStyle = '#D4AF37';
+                      ctx.lineWidth = 2.5;
+                      ctx.lineCap = 'round';
+                      ctx.lineTo((e.touches[0].clientX - rect.left) * scaleX, (e.touches[0].clientY - rect.top) * scaleY);
+                      ctx.stroke();
+                    }}
+                    onTouchEnd={() => setIsDrawing(false)}
                   />
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-[10px] text-muted-dark font-mono">
-                    <span>Draw Signature Below:</span>
-                    {hasDrawnSignature && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const canvas = signatureCanvasRef.current;
-                          if (canvas) {
-                            const ctx = canvas.getContext('2d');
-                            if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-                          }
-                          setHasDrawnSignature(false);
-                        }}
-                        className="text-amber-400 hover:text-white underline"
-                      >
-                        Clear Canvas
-                      </button>
-                    )}
-                  </div>
-                  <div className="relative border border-graphite-border rounded-xs bg-[#111] overflow-hidden">
-                    <canvas
-                      ref={signatureCanvasRef}
-                      width={380}
-                      height={90}
-                      className="w-full h-[90px] block cursor-crosshair touch-none"
-                      onMouseDown={(e) => {
-                        const canvas = signatureCanvasRef.current;
-                        if (!canvas) return;
-                        const ctx = canvas.getContext('2d');
-                        if (!ctx) return;
-                        setIsDrawing(true);
-                        setHasDrawnSignature(true);
-                        const rect = canvas.getBoundingClientRect();
-                        const scaleX = canvas.width / rect.width;
-                        const scaleY = canvas.height / rect.height;
-                        ctx.beginPath();
-                        ctx.moveTo((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
-                      }}
-                      onMouseMove={(e) => {
-                        if (!isDrawing) return;
-                        const canvas = signatureCanvasRef.current;
-                        if (!canvas) return;
-                        const ctx = canvas.getContext('2d');
-                        if (!ctx) return;
-                        const rect = canvas.getBoundingClientRect();
-                        const scaleX = canvas.width / rect.width;
-                        const scaleY = canvas.height / rect.height;
-                        ctx.strokeStyle = '#D4AF37';
-                        ctx.lineWidth = 2.5;
-                        ctx.lineCap = 'round';
-                        ctx.lineTo((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
-                        ctx.stroke();
-                      }}
-                      onMouseUp={() => setIsDrawing(false)}
-                      onMouseLeave={() => setIsDrawing(false)}
-                      onTouchStart={(e) => {
-                        const canvas = signatureCanvasRef.current;
-                        if (!canvas || !e.touches[0]) return;
-                        const ctx = canvas.getContext('2d');
-                        if (!ctx) return;
-                        setIsDrawing(true);
-                        setHasDrawnSignature(true);
-                        const rect = canvas.getBoundingClientRect();
-                        const scaleX = canvas.width / rect.width;
-                        const scaleY = canvas.height / rect.height;
-                        ctx.beginPath();
-                        ctx.moveTo((e.touches[0].clientX - rect.left) * scaleX, (e.touches[0].clientY - rect.top) * scaleY);
-                      }}
-                      onTouchMove={(e) => {
-                        if (!isDrawing || !e.touches[0]) return;
-                        const canvas = signatureCanvasRef.current;
-                        if (!canvas) return;
-                        const ctx = canvas.getContext('2d');
-                        if (!ctx) return;
-                        const rect = canvas.getBoundingClientRect();
-                        const scaleX = canvas.width / rect.width;
-                        const scaleY = canvas.height / rect.height;
-                        ctx.strokeStyle = '#D4AF37';
-                        ctx.lineWidth = 2.5;
-                        ctx.lineCap = 'round';
-                        ctx.lineTo((e.touches[0].clientX - rect.left) * scaleX, (e.touches[0].clientY - rect.top) * scaleY);
-                        ctx.stroke();
-                      }}
-                      onTouchEnd={() => setIsDrawing(false)}
-                    />
-                    {!hasDrawnSignature && (
-                      <span className="absolute inset-0 flex items-center justify-center text-[10px] text-muted-dark/50 pointer-events-none font-mono">
-                        (Optional: Click & drag to sign)
-                      </span>
-                    )}
-                  </div>
+                  {!hasDrawnSignature && (
+                    <span className="absolute inset-0 flex items-center justify-center text-[10px] text-muted-dark/50 pointer-events-none font-mono">
+                      (Optional: Click & drag to sign)
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
-
-            <div className="pt-2 border-t border-graphite-border flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setDeliveryModalOpen(false)}
-                className="px-3 py-1.5 bg-graphite text-muted text-xs font-mono uppercase min-h-[44px]"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-1.5 bg-emerald-500 text-obsidian font-bold text-xs font-mono uppercase hover:bg-white min-h-[44px]"
-              >
-                Confirm Delivery
-              </button>
-            </div>
           </form>
-        </div>
+        </MobileFormSheet>
       )}
     </div>
   );
